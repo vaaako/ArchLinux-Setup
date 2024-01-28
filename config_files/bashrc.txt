@@ -1,0 +1,49 @@
+
+# Bash completition
+if [ -f /etc/bash_completition ]; then
+	./etc/bash_completition
+fi
+
+# - ALIAS  - #
+alias ls='exa --icons'
+alias grep='grep --color=auto'
+
+alias removeorphans='sudo pacman -Rc $(pacman -Qdtq)'
+
+alias neofetch='neofetch --source "$HOME/.config/neofetch/arch_trans.txt" --ascii_colors 14 9 15'
+alias neowofetch='neofetch --source "$HOME/.config/neofetch/arch_trans2.txt" --ascii_colors 14 9 15'
+
+# EndeavourOS Colorscheme
+#alias neofetch='neofetch --source "$HOME/.config/neofetch/arch_trans.txt" --ascii_colors 2 3 15'
+#alias neowofetch='neofetch --source "$HOME/.config/neofetch/arch_trans2.txt" --ascii_colors 2 3 15'
+
+#PS1='[\u@\h \W]\$ '
+
+
+# - PS1 -
+NC="\[\e[0m\]"
+GREEN="\[\e[1;32m\]"
+WHITE="\[\033[m\]"
+MAGENTA="\[\033[1;35m\]"
+BLUE="\[\e[1;34m\]"
+RED="\[\e[1;31m\]"
+GRAY="\[\e[1;30m\]"
+
+PURPLE="\[$(tput setaf 165)\]"
+LIGHTPURPLE="\[$(tput setaf 213)\]"
+PINK="\[$(tput setaf 219)\]"
+HAT="\[$(tput setaf 93)\]"
+
+DIM="\[\e[2m\]"
+BOLD="\[\e[1m\]"
+
+# Complements
+TIME="${MAGENTA}\t"
+
+
+#PS1="${GRAY}┌─${TIME}${GRAY}─${GREEN}\u@${GREEN}\H \n${GRAY}└─${BLUE}[\w]> ${NC}"
+#PS1="${DIM}${GRAY}┌─${NC}${HAT}[${LIGHTPURPLE}${BOLD}\w${NC}${HAT}]\n${NC}${DIM}${GRAY}└─${NC}${HAT}[${PURPLE}\u@${LIGHTPURPLE}\h${HAT}]> ${NC}"
+PS1="${GRAY}┌──${PURPLE}(${TIME}${PURPLE})" # Time
+PS1+="\n${GRAY}└─${HAT}" # Left
+PS1+="[${PURPLE}\u@${LIGHTPURPLE}\h${HAT}]:" # [username@hostname]
+PS1+="${BOLD} \w> ${NC}" # >
