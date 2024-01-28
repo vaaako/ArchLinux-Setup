@@ -342,15 +342,47 @@ grub-install /dev/sda --efi-directory=/boot/efi
 ```
 > Make sure this is the correct disk if you have multiple HDs.
 
-If you don't want a silent boot *(no green OK wall appearing)*, open the */etc/default/grub* file and change the value of the `GRUB_CMDLINE_LINUX_DEFAULT` line:
+### Silent boot
+If you don't want a silent boot *(no green OK wall appearing)*, open the */etc/default/grub*,
+ file and change the value of the `GRUB_CMDLINE_LINUX_DEFAULT` line:
 ```
 GRUB_CMDLINE_LINUX_DEFAULT=""
 ```
 
-Apply all changes and the installation:
+### Config
+Make the **grub** config:
 ```sh
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
+
+### OS-PROEBER
+If you get the following warning: *"Warning: os-prober will **not** be executed to detect other bootable partitions [...]"*,
+ and want to seet **os-prober** to detect other boot partitions, check bellow, otherwhise jump to the next session
+
+Install **os-prober**
+```sh
+sudo pacman -S os-prober
+```
+
+Open **grub** config file
+```sh
+sudo nano /etc/default/grub
+```
+
+Run **os-prober** to detect other boot
+```sh
+sudo os-prober
+```
+
+Uncomment the line `GRUB_DISABLE_OS_PROBER=false` *(at the end of the file)*
+
+Now try to configure **grub** again
+```sh
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+Now you should get the following warning: *"Warning: os-prober will be executed [...]"*
+
 
 ## Final configurations
 - Use the `exit` command to return to the iso terminal.
@@ -365,6 +397,8 @@ Congratulations, your Arch Linux is installed.
 
 # Post-Installation
 Ensure that the internet is working with a `ping`; if `ping` returns an error, run the `sudo nmtui` command *(installed with NetworkManager)* and connect to a Wi-Fi network.
+
+
 
 # Interface
 ## Internet
