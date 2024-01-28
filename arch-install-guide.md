@@ -2,7 +2,7 @@
 ## Keyboard
 First, configure your keyboard layout for installation.
 
-Use the command below to view all available layouts:
+Use the command bellow to view all available layouts:
 ```sh
 localectl list-keymaps
 ```
@@ -19,14 +19,14 @@ First, check if it's blocked with `rfkill`:
 rfkill
 ```
 
-If it's *soft-blocked*, unblock it with the command below:
+If it's *soft-blocked*, unblock it with the command bellow:
 ```sh
 rfkill unblock wlan
 ```
 
 For *Ethernet* connections, simply connect the cable.
 
-Use the command below to check your Wi-Fi card:
+Use the command bellow to check your Wi-Fi card:
 ```sh
 iwctl
 ```
@@ -123,7 +123,7 @@ Create a new partition with a size of **4Gb** *(Click "new" and type "4G")*.
 Finally, create a new partition with the remaining space and select **Write** for the Main Partition.
 
 ## Format
-Use the command `lsblk` to see each partition; this will be useful to confirm everything is correct after each command below.
+Use the command `lsblk` to see each partition; this will be useful to confirm everything is correct after each command bellow.
 
 Format the *main partition* to **Ext4**:
 ```sh
@@ -193,6 +193,29 @@ pacstrap -K /mnt base linux linux-firmware sof-firmware base-devel grub efibootm
 
 This will take some time...
 
+## Dual-boot
+If you don't want to dual-boot just skip to the next section *"Configuring the system"*
+
+You should alredy have Windows partitions *(or some other OS, I will be using windows here, but is basically the same thing)*
+
+You can install Windows after Arch Linux, but this way is easier
+
+### Make Windows mnt directory
+First of all, make a Windows mnt directory
+```sh
+mkdir -p /mnt/mnt/win
+```
+
+### Mount
+Now you should mount the Windows partition
+
+To know what partition is, run the commando `fdisk -l` and find the partition of type *"Microsoft basic data"*
+
+Then mount
+```sh
+mount /dev/sda4 /mnt/mnt/win
+```
+
 ## Configuring the system
 ### File System
 Check the mounted *file systems* in */mnt/* with the following command:
@@ -202,7 +225,7 @@ genfstab /mnt
 
 Once you confirm everything is correct, create a file named *fstab* with the information from the above command:
 ```sh
-genfstab /mnt > /mnt/etc/fstab
+genfstab -U /mnt > /mnt/etc/fstab
 ```
 
 ## Change root
@@ -263,14 +286,30 @@ localectl set-x11-keymap br abnt2
 
 You can check if the changes were made with the `localectl` command.
 
-### Hostname
+### Host
 Choose a name for your computer and add it to the */etc/hostname* file:
 ```sh
 nano /etc/hostname
 ```
 
+Like so
 ```
 name_of_your_computer
+```
+
+Open the **hosts** file in `/etc/hosts`, and insert the hosts:
+```
+127.0.0.1 localhost
+::1       localhost
+127.0.0.1 your_url.com # If you don't have one, ignore this line
+```
+
+### Initramfs
+This not necessary, since `mkinitcpio` was run on installation of the kernel package with pacstrap
+
+But if you want to make sure, just run:
+```sh
+mkinitcpio -P
 ```
 
 ### Root password
@@ -321,11 +360,6 @@ sudo pacman -Syu
 > Then switch back to the *root* user with the *exit* command.
 
 # Reboot
-Before rebooting, enable `networkmanager` so that the internet works:
-```sh
-systemctl enable NetworkManager
-```
-
 ## Microcode
 You may also want to install *intel-ucode* or *amd-ucode*; this will speed up some processes:
 ```sh
@@ -334,13 +368,27 @@ sudo pacman -S intel-ucode
 > This installation needs to be done before configuring **grub**.
 
 ## GRUB
+### Dual-Boot
+If you wan to have a dual-boot *(Windows)*, install the following packages:
+```sh
+sudo pacaman -S dosfstool os-prober mtools
+```
+
+Localize the partition of type *EFI System* with the command `fdisk -l` and mount the boot
+```sh
+mount /dev/sda5 /boot/efi
+```
+
+### Install
 Finally, configure the bootloader.
 
 Install **grub** on the *HD* with *Arch Linux*:
 ```sh
-grub-install /dev/sda --efi-directory=/boot/efi
+grub-install /dev/sda --efi-directory=/boot/efi --recheck
 ```
 > Make sure this is the correct disk if you have multiple HDs.
+>
+>**--recheck**: Check boot and find dual-boot *(if have one)*
 
 ### Silent boot
 If you don't want a silent boot *(no green OK wall appearing)*, open the */etc/default/grub*,
@@ -355,14 +403,11 @@ Make the **grub** config:
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### OS-PROEBER
+### os-prober
 If you get the following warning: *"Warning: os-prober will **not** be executed to detect other bootable partitions [...]"*,
  and want to seet **os-prober** to detect other boot partitions, check bellow, otherwhise jump to the next session
 
-Install **os-prober**
-```sh
-sudo pacman -S os-prober
-```
+>You should alredy had installed it
 
 Open **grub** config file
 ```sh
@@ -385,6 +430,11 @@ Now you should get the following warning: *"Warning: os-prober will be executed 
 
 
 ## Final configurations
+Before rebooting, enable `networkmanager` so that the internet works:
+```sh
+systemctl enable NetworkManager
+```
+
 - Use the `exit` command to return to the iso terminal.
 - Execute the `umount -R /mnt` command to unmount all partitions.
 
@@ -395,9 +445,12 @@ Now you can finally restart with the `reboot` command.
 
 Congratulations, your Arch Linux is installed.
 
-# Post-Installation
-Ensure that the internet is working with a `ping`; if `ping` returns an error, run the `sudo nmtui` command *(installed with NetworkManager)* and connect to a Wi-Fi network.
+**~>** It's common to get the fail: `[FAILED] Fialed unmounting /run/archiso/bootmnt`, don't worry about it
 
+
+# Post-Installation
+Ensure that the internet is working with a `ping`.
+ If `ping` returns an error, run the `sudo nmtui` command *(installed with NetworkManager)* and connect to a Wi-Fi network.
 
 
 # Interface
