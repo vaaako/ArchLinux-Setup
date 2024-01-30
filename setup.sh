@@ -79,8 +79,12 @@ function missing_packages() {
 
 	# Fonts
 	make_bold_blue "Downloading Fonts"
-	sudo pacman -S noto-fonts-emoji ttf-jetbrains-mono-nerd ttf-ubuntu-font-family ttf-liberation ttf-cascadia-code
-	#              Emoji font       Nerd font               System font            Github Font    My favorite font for coding
+	sudo pacman -S ttf-jetbrains-mono-nerd ttf-ubuntu-font-family ttf-liberation ttf-cascadia-code
+	#              Nerd font               System font            Github Font    My favorite font for coding
+	
+	make_bold_blue "Downloading Noto Fonts"
+	sudo pacman -S noto-fonts noto-fonts-cjk               noto-fonts-emoji
+	#              Japanese and characters support font    Emoji font
 
 	# e.g. open browser when click a link on discord and other features
 	make_bold_blue "Downloading xdg-utils"
@@ -354,5 +358,6 @@ main
 # Menu items
 # choice=$(whiptail --menu "Choose an option" 10 30 3 1 "Option 1" 2 "Option 2" 3 "Option 3")
 # echo "You chose option $choice"
+
 
 
