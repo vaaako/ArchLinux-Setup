@@ -4,12 +4,16 @@
 # VARS
 #####
 
-HEIGHT=20
+HEIGHT=15
 WIDTH=30
 
 CONFIG_FILES_PATH="$(pwd)/config_files"
 XFCE_CONFIG_PATH="${CONFIG_FILES_PATH}/xfce"
+KITTY_CONFIG_PATH="${CONFIG_FILES_PATH}/kitty"
 NEOFETCH_CONFIG_PATH="${CONFIG_FILES_PATH}/neofetch"
+
+BOLD="\033[1m"
+NC="\033[0m"
 
 #####
 # UTILS
@@ -41,27 +45,31 @@ function install_aur() {
 }
 
 function list_item() {
-	local BOLD="\033[1m"
 	local MAGENTA="\033[1;35m"
 	local BLUE="\e[1;34m"
-
-	local NC="\033[0m"
 
 	echo -e "${BOLD}${BLUE}$1:${NC} $2"
 }
 
 function make_bold_blue() {
-	local BOLD="\033[1m"
 	local BLUE="\e[1;34m"
 
-	local NC="\033[0m"
-
 	echo -e "${BOLD}~> ${BLUE}$1${NC}\n"
+}
+
+function make_bold_red() {
+	local RED="\e[1;31m"
+
+	echo -e "${BOLD}~> ${RED}$1${NC}\n"
 }
 
 #####
 # FUNCTIONS
 #####
+
+#
+# Install #
+#
 
 function missing_packages() {
 	# Audio Stream
@@ -84,12 +92,12 @@ function missing_packages() {
 	
 	make_bold_blue "Downloading Noto Fonts"
 	sudo pacman -S noto-fonts noto-fonts-cjk               noto-fonts-emoji
-	#              Japanese and characters support font    Emoji font
+	#              Asian characters support font           Emoji font
 
 	# e.g. open browser when click a link on discord and other features
-	make_bold_blue "Downloading xdg-utils"
+	make_bold_blue "Downloading xdg-utils and xsel"
 	echo "e.g. open browser when click a link on discord and other features"
-	sudo pacman -S xdg-utils
+	sudo pacman -S xdg-utils xsel
 
 	# Firewall
 	make_bold_blue "Downloading firewall"
@@ -132,6 +140,101 @@ function essencial_packages() {
 	make_bold_blue "Reboot the system to gvfs work"
 }
 
+function xfce_install() {
+	sudo pacman -S xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
+}
+
+function vako_apps() {
+	make_bold_blue "Downloading Vako Apps"
+	
+	sudo pacman -S opera opera-ffmpeg-codecs discord vlc
+	# opera needs this codec to play spotify
+
+	# Vencord
+	sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
+
+	# C/C++ Dev tools
+	sudo pacman -S clang cmake gdb valgrind
+
+	install_aur "simplescreenrecorder"
+}
+
+
+
+
+
+#
+# Config #
+#
+function bashrc() {
+	# Set completion ignore case sensitive
+
+	# If ~/.inputrc doesn't exist yet: First include the original /etc/inputrc
+	# so it won't get overriden
+	if [ ! -a ~/.inputrc ]; then
+		echo '$include /etc/inputrc' > ~/.inputrc
+	fi
+
+	# Add shell-option to ~/.inputrc to enable case-insensitive tab completion
+	echo 'set completion-ignore-case On' >> ~/.inputrc
+
+	# Insert bashr
+	cat "${CONFIG_FILES_PATH}/bashrc.txt" >> "${HOME}/.bashrc"
+}
+
+function kitty_terminal() {
+	if [ ! -f "/usr/bin/kitty" ] && [ ! -d "${HOME}/.local/kitty.app" ]; then
+		make_bold_red "Kitty terminal is not installed"
+		exit
+	fi
+
+	# If not unziped
+	if [ ! -d "${KITTY_CONFIG_PATH}" ]; then
+		# If zip doesn't exist
+		if [ ! -f "${KITTY_CONFIG_PATH}.zip" ]; then
+			echo "~> Missing file ${KITTY_CONFIG_PATH}.zip"
+			exit
+		fi
+
+		unzip "${KITTY_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+	fi
+
+	local KITTY_PATH="${HOME}/.config/kitty"
+
+	# Make backup
+	cp "${KITTY_PATH}/kitty.conf" "${KITTY_PATH}/kitty.conf.bak"
+
+	# Copy files
+	cp "${KITTY_CONFIG_PATH}"/*.conf "${KITTY_PATH}"
+
+}
+
+function neofetch() {
+	if [ ! -f "/usr/bin/neofetch" ]; then
+		make_bold_red "~> You have Arch, why don't you have neofetch??"
+		sudo pacman -S neofetch
+	fi
+
+	# If not unziped
+	if [ ! -d "${NEOFETCH_CONFIG_PATH}" ]; then
+		# If zip doesn't exist
+		if [ ! -f "${NEOFETCH_CONFIG_PATH}.zip" ]; then
+			echo "~> Missing file ${NEOFETCH_CONFIG_PATH}.zip"
+			exit
+		fi
+
+		unzip "${NEOFETCH_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+	fi
+
+	local NEOFETCH_PATH="${HOME}/.config/neofetch"
+
+	# Make backup
+	cp "${NEOFETCH_PATH}/config.conf" "${NEOFETCH_PATH}/config.conf.bak"
+
+	# Copy files
+	cp "$NEOFETCH_CONFIG_PATH"/*.txt "${NEOFETCH_CONFIG_PATH}/config.conf" "${NEOFETCH_PATH}"
+}
+
 
 function panel_css() {
 	local GTK_PATH="${HOME}/.config/gtk-3.0/"
@@ -162,6 +265,31 @@ function xfce_xml() {
 }
 
 
+
+
+
+
+
+
+
+
+#
+# Themes #
+#
+function xfce-terminal() {
+	local COLORSCHEME_PATH="${HOME}/.local/share/xfce/terminal/colorschemes"
+
+	if [ ! -d $COLORSCHEME_PATH ]; then
+		mkdir -p $COLORSCHEME_PATH
+	fi
+
+	# Copy theme to path
+	wget https://raw.githubusercontent.com/endeavouros-team/endeavouros-xfce-terminal-colors/master/endeavouros.theme -P $COLORSCHEME_PATH
+
+	make_bold_blue "Change the terminal background color to #101017"
+}
+
+
 function icons_and_themes() {
 	local BOLD="\033[1m"
 	local NC="\033[0m"
@@ -188,112 +316,45 @@ function icons_and_themes() {
 }
 
 
-
-function terminal_theme() {
-	local COLORSCHEME_PATH="${HOME}/.local/share/xfce/terminal/colorschemes"
-
-	if [ ! -d $COLORSCHEME_PATH ]; then
-		mkdir -p $COLORSCHEME_PATH
-	fi
-
-	# Copy theme to path
-	wget https://raw.githubusercontent.com/endeavouros-team/endeavouros-xfce-terminal-colors/master/endeavouros.theme -P $COLORSCHEME_PATH
-
-	make_bold_blue "Change the terminal background color to #101017"
-}
-
-
-function bashrc() {
-	# Set completion ignore case sensitive
-
-	# If ~/.inputrc doesn't exist yet: First include the original /etc/inputrc
-	# so it won't get overriden
-	if [ ! -a ~/.inputrc ]; then
-		echo '$include /etc/inputrc' > ~/.inputrc
-	fi
-
-	# Add shell-option to ~/.inputrc to enable case-insensitive tab completion
-	echo 'set completion-ignore-case On' >> ~/.inputrc
-
-	# Insert bashr
-	cat "${CONFIG_FILES_PATH}/bashrc.txt" >> "${HOME}/.bashrc"
-}
-
-
-function neofetch() {
-	if [ ! -f "/usr/bin/neofetch" ]; then
-		echo "~> You have Arch, why don't you have neofetch??"
-		sudo pacman -S neofetch
-	fi
-
-	# If not unziped
-	if [ ! -d "${NEOFETCH_CONFIG_PATH}" ]; then
-		# If zip doesn't exist
-		if [ ! -f "${NEOFETCH_CONFIG_PATH}.zip" ]; then
-			echo "~> Missing file ${NEOFETCH_CONFIG_PATH}.zip"
-			exit
-		fi
-
-		unzip "${NEOFETCH_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
-	fi
-
-	local NEOFETCH_PATH="${HOME}/.config/neofetch"
-
-	# Make backup
-	cp "${NEOFETCH_PATH}/config.conf" "${NEOFETCH_PATH}/config.conf.bak"
-
-	# Copy files
-	cp "$NEOFETCH_CONFIG_PATH"/*.txt "${NEOFETCH_CONFIG_PATH}/config.conf" "${NEOFETCH_PATH}"
-}
-
-
-function xfce_install() {
-	sudo pacman -S xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
-}
-
-
-function vako_apps() {
-	make_bold_blue "Downloading Vako Apps"
-	
-	sudo pacman -S opera opera-ffmpeg-codecs discord vlc
-	# opera needs this codec to play spotify
-
-	# Vencord
-	sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
-
-	# C/C++ Dev tools
-	sudo pacman -S clang cmake gdb valgrind
-
-	install_aur "simplescreenrecorder"
-}
-
-
-
-
-# pacman -R $(pacman -Qdtq)
-# Remove all unrequired packages
-# Q = Query
-# d = Depths
-# t = Unrequired
-# q = Quiet
-
+#####
+# Sections
+#####
 function main() {
-	local TITLE="Arch Linux setup \nUse Arrows to move"
+	local TITLE="Arch Linux setup \nChoose a section \nUse Arrows to move"
 	local OPTIONS=(
-		1 "Missing Packages"
-		2 "Essencial Packages"
-		3 "Panel CSS"
-		4 "XFCE XMLs"
-		5 "Icons and Themes"
-		6 "Terminal theme"
-		7 ".bashrc"
-		8 "neofetch"
-		9 "XFCE Install"
-		10 "Vako Apps"
+		1 "Install"
+		2 "Configs"
+		3 "Themes"
+		4 "Exit"
 	)
-
 	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
 
+	case $CHOICE in
+		1)
+			install_sec
+			;;
+		2)
+			config_sec
+			;;
+		3)
+			theme_sec
+			;;
+		4)
+			exit
+			;;
+	esac
+}
+
+function install_sec() {
+	local TITLE="Arch Linux setup \nChoose a action"
+	local OPTIONS=(
+		1 "Missing Packages" # Not actual missing packages, but I don't know how to call this
+		2 "Essencial Packages"
+		3 "Vako Apps"
+		4 "XFCE Install"
+		5 "Back"
+	)
+	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
@@ -304,34 +365,76 @@ function main() {
 			essencial_packages
 			;;
 		3)
-			panel_css
+			vako_apps
 			;;
 		4)
-			xfce_xml
-			;;
-		5)
-			icons_and_themes
-			;;
-		6)
-			terminal_theme
-			;;
-		7)
-			bashrc
-			;;
-		8)
-			neofetch
-			;;
-
-		# In case I git clone this script to install XFCE
-		9)
 			xfce_install
 			;;
-
-		10)
-			vako_apps
+		5)
+			main
 			;;
 	esac
 }
+
+function config_sec() {
+	local TITLE="Arch Linux setup \nChoose a action"
+	local OPTIONS=(
+		1 ".bashrc"
+		2 "Kitty Terminal"
+		3 "neofetch"
+		4 "Panel CSS"
+		5 "XFCE XMLs"
+		6 "Back"
+	)
+	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
+
+	clear
+	case $CHOICE in
+		1)
+			bashrc
+			;;
+		2)
+			kitty_terminal
+			;;
+		3)
+			neofetch
+			;;
+		4)
+			panel_css
+			;;
+		5)
+			xfce_xml
+			;;
+		6)
+			main
+			;;
+	esac
+}
+
+function theme_sec() {
+	local TITLE="Arch Linux setup \nChoose a action"
+	local OPTIONS=(
+		1 "Icons and Themes"
+		2 "xfce-terminal theme"
+		3 "Back"
+	)
+	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
+
+	clear
+	case $CHOICE in
+		1)
+			icons_and_themes
+			;;
+		2)
+			xfce-terminal
+			;;
+		3)
+			main
+			;;
+	esac
+}
+
+
 
 
 #####
