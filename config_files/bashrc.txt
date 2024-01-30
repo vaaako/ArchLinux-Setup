@@ -11,8 +11,8 @@ alias grep='grep --color=auto'
 alias removeorphans='sudo pacman -Rc $(pacman -Qdtq)'
 
 # 14 9 15 (9 -> Light red) / 14 13 15 (13 -> Light purple) / 2 3 15 (EndeavourOS Colorscheme)
-alias neofetch='neofetch --source "$HOME/.config/neofetch/arch_trans.txt" --ascii_colors 14 13 15'
-alias neowofetch='neofetch --source "$HOME/.config/neofetch/arch_trans2.txt" --ascii_colors 14 13 15'
+alias neofetch='neofetch --source "$HOME/.config/neofetch/arch_trans.txt" --ascii_colors 14 9 15'
+alias neowofetch='neofetch --source "$HOME/.config/neofetch/arch_trans2.txt" --ascii_colors 14 9 15'
 
 #PS1='[\u@\h \W]\$ '
 
