@@ -19,8 +19,8 @@ NC="\033[0m"
 # UTILS
 #####
 
-# Function to display an option box
-function option_box() {
+# Display dialog menu box
+function menu_box() {
 	local TITLE="$1"
 	shift # Shift to take options
 	local OPTIONS=("$@")
@@ -35,6 +35,22 @@ function option_box() {
 
 	echo "$CHOICE"
 }
+
+# Display dialog yes/no box
+function yesno_box() {
+	local TITLE="$1"
+
+	dialog --yesno \
+	"${TITLE}" \
+	8 $WIDTH \
+	2>&1 >/dev/tty
+
+	# Return response
+	echo "$?"
+	# echo "$CHOICE"
+}
+
+
 
 function install_aur() {
 	git clone "https://aur.archlinux.org/$1.git"
@@ -63,6 +79,14 @@ function make_bold_red() {
 	echo -e "${BOLD}~> ${RED}$1${NC}\n"
 }
 
+function make_yellow() {
+	local YELLOW="\e[1;33m"
+
+	echo -e "~> ${YELLOW}$1${NC}"
+}
+
+
+
 #####
 # FUNCTIONS
 #####
@@ -72,9 +96,18 @@ function make_bold_red() {
 #
 
 function missing_packages() {
+	make_bold_blue "Updating first"
+	sudo pacman -Syu
+
 	# Audio Stream
-	make_bold_blue "Downloading pulseaudio"
-	sudo pacman -S pulseaudio pavucontrol
+	make_bold_blue "Downloading pipewire and pavucontrol"
+	# sudo pacman -S pulseaudio pavucontrol
+	sudo pacman -Rdd pulseaudio # Remove pulseaudio if have
+	sudo pacman -S pipewire-{jack, alsa, pulse}
+	sudo pacman -S pavucontrol
+
+	# Enable pipwire
+	sudo systemctl --user enable --now pipewire pipewire-pulse
 
 	# Codecs
 	make_bold_blue "Downloading Codecs"
@@ -108,12 +141,14 @@ function missing_packages() {
 	sudo systemctl enable ufw.service
 	sudo systemctl start ufw.service
 
-	# sudo systemctl start bluetooth.service --now
-
-
 	# Mugshot
 	make_bold_blue "Downloading mugshot"
 	install_aur "mugshot"
+
+	# If yes
+	if [ $(yesno_box "Do you want to install bluetooth tools?") -eq 0 ]; then
+		sudo pacman -S bluetoothctl bluez blueman
+	fi
 }
 
 
@@ -145,18 +180,45 @@ function xfce_install() {
 }
 
 function vako_apps() {
-	make_bold_blue "Downloading Vako Apps"
-	
-	sudo pacman -S opera opera-ffmpeg-codecs discord vlc
-	# opera needs this codec to play spotify
+	make_bold_blue "Updating first"
+	sudo pacman -Syu
+
+	local TITLE="What browser do you want?"
+	local OPTIONS=(
+		1 "Firefox"
+		2 "Opera"
+		3 "Both"
+	)
+	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
+
+	make_bold_blue "Downloading web browser"
+	case $CHOICE in
+		1)
+			# Opera needs this codec to play spotify
+			sudo pacman -S opera opera-ffmpeg-codecs 
+			;;
+		2)
+			sudo pacman -S firefox
+			;;
+		3)
+			sudo pacman -S opera opera-ffmpeg-codecs firefox
+			;;
+	esac
+
+	make_bold_blue "Downloading some stuff"
+	sudo pacman -S discord vlc
 
 	# Vencord
 	sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
 
+	install_aur "simplescreenrecorder"
+
+
+
+	make_bold_blue "Downloading dev tools"
 	# C/C++ Dev tools
 	sudo pacman -S clang cmake gdb valgrind
 
-	install_aur "simplescreenrecorder"
 }
 
 
@@ -180,12 +242,25 @@ function bashrc() {
 
 	# Insert bashr
 	cat "${CONFIG_FILES_PATH}/bashrc.txt" >> "${HOME}/.bashrc"
+
+	make_bold_blue "To see the password you are typing, go to \"/etc/sudoers\" and type \"Defaults pwfeedback\", save"
 }
 
 function kitty_terminal() {
-	if [ ! -f "/usr/bin/kitty" ] && [ ! -d "${HOME}/.local/kitty.app" ]; then
+	if ! command -v "kitty" &> /dev/null; then
 		make_bold_red "Kitty terminal is not installed"
-		exit
+
+		case $(yesno_box "Kitty is not installed \nDo you want to install kitty?") in
+			0)
+				sudo pacman -S kitty
+				exit
+				;;
+
+			# No/Cancel
+			1 | 255)
+				exit
+				;;
+		esac
 	fi
 
 	# If not unziped
@@ -193,7 +268,6 @@ function kitty_terminal() {
 		# If zip doesn't exist
 		if [ ! -f "${KITTY_CONFIG_PATH}.zip" ]; then
 			echo "~> Missing file ${KITTY_CONFIG_PATH}.zip"
-			exit
 		fi
 
 		unzip "${KITTY_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
@@ -210,7 +284,7 @@ function kitty_terminal() {
 }
 
 function neofetch() {
-	if [ ! -f "/usr/bin/neofetch" ]; then
+	if ! command -v "neofetch" &> /dev/null; then
 		make_bold_red "~> You have Arch, why don't you have neofetch??"
 		sudo pacman -S neofetch
 	fi
@@ -264,7 +338,12 @@ function xfce_xml() {
 	cp "$XFCE_CONFIG_PATH"/*.xml "${HOME}/.config/xfce/xfconf/xfce-perchannel-xml"
 }
 
-
+function pacman_conf() {
+	make_bold_blue "Go to \"/etc/pacman.conf\" and uncomment the following options"
+	make_yellow "Color"
+	make_yellow "CheckSpace"
+	make_yellow "ParallelDownloads = 5"
+}
 
 
 
@@ -302,19 +381,25 @@ function icons_and_themes() {
 	echo -e "\n- Icons -"
 	list_item "Vimix" "https://www.opendesktop.org/p/1273372"
 	list_item "Bibata Cursor" "https://www.xfce-look.org/p/1914825"
+	
+	echo -e "\n"
+	make_bold_blue "Move themes to ${BOLD}~/.themes${NC} and icons to ${BOLD}~/.icons${NC}"
 
-	echo -e "\n~> Move themes to ${BOLD}~/.themes${NC} and icons to ${BOLD}~/.icons${NC}"
+	make_bold_red "(sorry, I am won't dowload all this and zip to github)"
 
-	echo -e "(sorry, I am won't dowload all this and zip to github)"
-
-# - Mocha: Purple
-# 	- Alt: Orange
-# 	- Alt2: Folder with black details
-# - Macchiato: Orange
-# - Frappe: Blue
-# - Latte: Slightly dark blue
+	make_yellow "Catpuccin Theme colors:"
+	list_item "- Mocha" "Purple"
+	list_item "   - Alt" "Orange"
+	list_item "   - Alt2" "Folder with black details"
+	list_item "- Macchiato" "Orange"
+	list_item "- Frappe" "Blue"
+	list_item "- Latte" "Slightly dark blue"
 }
 
+
+# Some useful packages:
+# - haguichi (AUR)
+# 	+ Hamachi GUI
 
 #####
 # Sections
@@ -327,7 +412,7 @@ function main() {
 		3 "Themes"
 		4 "Exit"
 	)
-	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
 	case $CHOICE in
 		1)
@@ -340,6 +425,7 @@ function main() {
 			theme_sec
 			;;
 		4)
+			clear
 			exit
 			;;
 	esac
@@ -354,7 +440,7 @@ function install_sec() {
 		4 "XFCE Install"
 		5 "Back"
 	)
-	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
@@ -384,9 +470,10 @@ function config_sec() {
 		3 "neofetch"
 		4 "Panel CSS"
 		5 "XFCE XMLs"
-		6 "Back"
+		6 "Pacman"
+		7 "Back"
 	)
-	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
@@ -406,6 +493,9 @@ function config_sec() {
 			xfce_xml
 			;;
 		6)
+			pacman_conf
+			;;
+		7)
 			main
 			;;
 	esac
@@ -418,7 +508,7 @@ function theme_sec() {
 		2 "xfce-terminal theme"
 		3 "Back"
 	)
-	local CHOICE=$(option_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
@@ -453,6 +543,9 @@ if [ $EUID == 0 ]; then
 fi
 
 main
+
+
+
 
 # menu / yesno / inputbox / msgbox / checklist / radiolist
 # Title
