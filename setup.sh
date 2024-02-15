@@ -229,18 +229,7 @@ function vako_apps() {
 # Config #
 #
 function bashrc() {
-	# Set completion ignore case sensitive
-
-	# If ~/.inputrc doesn't exist yet: First include the original /etc/inputrc
-	# so it won't get overriden
-	if [ ! -a ~/.inputrc ]; then
-		echo '$include /etc/inputrc' > ~/.inputrc
-	fi
-
-	# Add shell-option to ~/.inputrc to enable case-insensitive tab completion
-	echo 'set completion-ignore-case On' >> ~/.inputrc
-
-	# Insert bashr
+	# Insert bashrc
 	cat "${CONFIG_FILES_PATH}/bashrc.txt" >> "${HOME}/.bashrc"
 
 	make_bold_blue "To see the password you are typing, go to \"/etc/sudoers\" and type \"Defaults pwfeedback\", save"
