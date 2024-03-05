@@ -70,7 +70,7 @@ function list_item() {
 function make_bold_blue() {
 	local BLUE="\e[1;34m"
 
-	echo -e "${BOLD}~> ${BLUE}$1${NC}\n"
+	echo -e "\n\n${BOLD}~> ${BLUE}$1${NC}\n"
 }
 
 function make_bold_red() {
@@ -357,6 +357,15 @@ function xfce-terminal() {
 	make_bold_blue "Change the terminal background color to #101017"
 }
 
+function kvantum() {
+	make_bold_blue "Downloading"
+	sudo pacman -S kvantum
+
+	make_bold_blue "Creating config file"
+	mkdir ~/.config/Kvantum/
+	echo -e "[General]\ntheme=KvArcDark" > ~/.config/Kvantum/kvantum.kvconfig
+
+}
 
 function icons_and_themes() {
 	local BOLD="\033[1m"
@@ -495,7 +504,8 @@ function theme_sec() {
 	local OPTIONS=(
 		1 "Icons and Themes"
 		2 "xfce-terminal theme"
-		3 "Back"
+		3 "Kvantum"
+		4 "Back"
 	)
 	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
@@ -508,6 +518,9 @@ function theme_sec() {
 			xfce-terminal
 			;;
 		3)
+			kvantum
+			;;
+		4)
 			main
 			;;
 	esac
