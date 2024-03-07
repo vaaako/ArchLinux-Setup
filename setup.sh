@@ -235,6 +235,38 @@ function bashrc() {
 	make_bold_blue "To see the password you are typing, go to \"/etc/sudoers\" and type \"Defaults pwfeedback\", save"
 }
 
+function zshrc() {
+	# Install zsh
+	if ! command -v "zsh" &> /dev/null; then
+		make_bold_red "ZSH terminal is not installed"
+
+		case $(yesno_box "ZSH is not installed \nDo you want to install it?") in
+			0)
+				sudo pacman -S zsh
+				exit
+				;;
+
+			# No/Cancel
+			1 | 255)
+				exit
+				;;
+		esac
+	fi
+
+
+	# Make zshrc working directory
+	mkdir -p ~/.config/zsh
+
+	# Insert zshrc
+	cat "${CONFIG_FILES_PATH}/zshrc.txt" >> "${HOME}/.zshrc"
+
+	# Download suggestions plugin
+	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh/zsh-autosuggestions
+
+	# Change default terminal to zsh
+	chsh -s $(which zsh)
+}
+
 function kitty_terminal() {
 	if ! command -v "kitty" &> /dev/null; then
 		make_bold_red "Kitty terminal is not installed"
@@ -254,12 +286,14 @@ function kitty_terminal() {
 
 	# If not unziped
 	if [ ! -d "${KITTY_CONFIG_PATH}" ]; then
-		# If zip doesn't exist
-		if [ ! -f "${KITTY_CONFIG_PATH}.zip" ]; then
-			echo "~> Missing file ${KITTY_CONFIG_PATH}.zip"
-		fi
+		make_bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
 
-		unzip "${KITTY_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+	# 	# If zip doesn't exist
+	# 	if [ ! -f "${KITTY_CONFIG_PATH}.zip" ]; then
+	# 		echo "~> Missing file ${KITTY_CONFIG_PATH}.zip"
+	# 	fi
+	#
+	# 	unzip "${KITTY_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
 	fi
 
 	local KITTY_PATH="${HOME}/.config/kitty"
@@ -280,13 +314,15 @@ function neofetch() {
 
 	# If not unziped
 	if [ ! -d "${NEOFETCH_CONFIG_PATH}" ]; then
-		# If zip doesn't exist
-		if [ ! -f "${NEOFETCH_CONFIG_PATH}.zip" ]; then
-			echo "~> Missing file ${NEOFETCH_CONFIG_PATH}.zip"
-			exit
-		fi
+		make_bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
 
-		unzip "${NEOFETCH_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+		# If zip doesn't exist
+		# if [ ! -f "${NEOFETCH_CONFIG_PATH}.zip" ]; then
+		# 	echo "~> Missing file ${NEOFETCH_CONFIG_PATH}.zip"
+		# 	exit
+		# fi
+		#
+		# unzip "${NEOFETCH_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
 	fi
 
 	local NEOFETCH_PATH="${HOME}/.config/neofetch"
@@ -295,7 +331,7 @@ function neofetch() {
 	cp "${NEOFETCH_PATH}/config.conf" "${NEOFETCH_PATH}/config.conf.bak"
 
 	# Copy files
-	cp "$NEOFETCH_CONFIG_PATH"/*.txt "${NEOFETCH_CONFIG_PATH}/config.conf" "${NEOFETCH_PATH}"
+	cp $NEOFETCH_CONFIG_PATH/*.txt "${NEOFETCH_CONFIG_PATH}/config.conf" $NEOFETCH_PATH
 }
 
 
@@ -464,12 +500,13 @@ function config_sec() {
 	local TITLE="Arch Linux setup \nChoose a action"
 	local OPTIONS=(
 		1 ".bashrc"
-		2 "Kitty Terminal"
-		3 "neofetch"
-		4 "Panel CSS"
-		5 "XFCE XMLs"
-		6 "Pacman"
-		7 "Back"
+		2 ".zshrc"
+		3 "Kitty Terminal"
+		4 "neofetch"
+		5 "Panel CSS"
+		6 "XFCE XMLs"
+		7 "Pacman"
+		8 "Back"
 	)
 	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
@@ -479,21 +516,24 @@ function config_sec() {
 			bashrc
 			;;
 		2)
-			kitty_terminal
+			zshrc
 			;;
 		3)
-			neofetch
+			kitty_terminal
 			;;
 		4)
-			panel_css
+			neofetch
 			;;
 		5)
-			xfce_xml
+			panel_css
 			;;
 		6)
-			pacman_conf
+			xfce_xml
 			;;
 		7)
+			pacman_conf
+			;;
+		8)
 			main
 			;;
 	esac
