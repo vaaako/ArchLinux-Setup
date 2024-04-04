@@ -55,7 +55,7 @@ function yesno_box() {
 function install_aur() {
 	git clone "https://aur.archlinux.org/$1.git"
 	cd "$1"
-	makepkg -si
+	makepkg -Syi
 	cd ..
 	sudo rm -rf "$1"
 }
@@ -67,19 +67,19 @@ function list_item() {
 	echo -e "${BOLD}${BLUE}$1:${NC} $2"
 }
 
-function make_bold_blue() {
+function bold_blue() {
 	local BLUE="\e[1;34m"
 
 	echo -e "\n\n${BOLD}~> ${BLUE}$1${NC}\n"
 }
 
-function make_bold_red() {
+function bold_red() {
 	local RED="\e[1;31m"
 
 	echo -e "${BOLD}~> ${RED}$1${NC}\n"
 }
 
-function make_yellow() {
+function yellow() {
 	local YELLOW="\e[1;33m"
 
 	echo -e "~> ${YELLOW}$1${NC}"
@@ -96,75 +96,75 @@ function make_yellow() {
 #
 
 function missing_packages() {
-	make_bold_blue "Updating first"
-	sudo pacman -Syu
+	bold_blue "Updating first"
+	sudo pacman -Syyu
 
 	# Audio Stream
-	make_bold_blue "Downloading pipewire and pavucontrol"
-	# sudo pacman -S pulseaudio pavucontrol
+	bold_blue "Downloading pipewire and pavucontrol"
+	# sudo pacman -Sy pulseaudio pavucontrol
 	sudo pacman -Rdd pulseaudio # Remove pulseaudio if have
-	sudo pacman -S pipewire-{jack, alsa, pulse}
-	sudo pacman -S pavucontrol
+	sudo pacman -Sy pipewire-{jack, alsa, pulse}
+	sudo pacman -Sy pavucontrol
 
 	# Enable pipwire
 	sudo systemctl --user enable --now pipewire pipewire-pulse
 
 	# Codecs
-	make_bold_blue "Downloading Codecs"
-	sudo pacman -S ffmpeg gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-plugins-base gst-libav gstreamer
+	bold_blue "Downloading Codecs"
+	sudo pacman -Sy ffmpeg gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-plugins-base gst-libav gstreamer
 
 	# Thunar
-	make_bold_blue "Downloading Thunar essencial packages"
-	sudo pacman -S exa thunar-archive-plugin file-roller
-	#              Better LS, Archive plugin, Compress manager
+	bold_blue "Downloading Thunar essencial packages"
+	sudo pacman -Sy exa thunar-archive-plugin file-roller gvfs-mtp
+	#              Better LS, Archive plugin, Compress manager, Connect smartphone
 
 	# Fonts
-	make_bold_blue "Downloading Fonts"
-	sudo pacman -S ttf-jetbrains-mono-nerd ttf-ubuntu-font-family ttf-liberation ttf-cascadia-code
+	bold_blue "Downloading Fonts"
+	sudo pacman -Sy ttf-jetbrains-mono-nerd ttf-ubuntu-font-family ttf-liberation ttf-cascadia-code
 	#              Nerd font               System font            Github Font    My favorite font for coding
 	
-	make_bold_blue "Downloading Noto Fonts"
-	sudo pacman -S noto-fonts noto-fonts-cjk               noto-fonts-emoji
+	bold_blue "Downloading Noto Fonts"
+	sudo pacman -Sy noto-fonts noto-fonts-cjk               noto-fonts-emoji
 	#              Asian characters support font           Emoji font
 
 	# e.g. open browser when click a link on discord and other features
-	make_bold_blue "Downloading xdg-utils and xsel"
+	bold_blue "Downloading xdg-utils and xsel"
 	echo "e.g. open browser when click a link on discord and other features"
-	sudo pacman -S xdg-utils xsel
+	sudo pacman -Sy xdg-utils xsel
 
 	# Firewall
-	make_bold_blue "Downloading firewall"
-	sudo pacman -S ufw gufw
+	bold_blue "Downloading firewall"
+	sudo pacman -Sy ufw gufw
 
 	## Start firewall
-	make_bold_blue "Enabling firewall"
+	bold_blue "Enabling firewall"
 	sudo systemctl enable ufw.service
 	sudo systemctl start ufw.service
 
 	# Mugshot
-	make_bold_blue "Downloading mugshot"
+	bold_blue "Downloading mugshot"
 	install_aur "mugshot"
 
 	# If yes
-	if [ $(yesno_box "Do you want to install bluetooth tools?") -eq 0 ]; then
-		sudo pacman -S bluetoothctl bluez blueman
+	if [ $(yesno_box "Do you want to install bluetooth?") -eq 0 ]; then
+		sudo pacman -Sy blueberry
 	fi
 }
 
 
 function essencial_packages() {
-	make_bold_blue "Downloading git and wget"
-	sudo pacman -S git wget
+	bold_blue "Downloading git and wget"
+	sudo pacman -Sy git wget
 
 	# Manager of user directories (Downloads, Documents etc)
-	# sudo pacman -S xdg-user-dirs
+	# sudo pacman -Sy xdg-user-dirs
 
-	make_bold_blue "Downloading bash completition for pacman"
-	sudo pacman -S bash_completition
+	bold_blue "Downloading bash completition for pacman"
+	sudo pacman -Sy bash_completition
 
 	# Trash and devices manager
-	make_bold_blue "Downloading gvfs"
-	sudo pacman -S gvfs
+	bold_blue "Downloading gvfs"
+	sudo pacman -Sy gvfs
 
 # Just run the command bellow if gvfs don't create the trash folder
 # MNT=/; ID=$(id -u); sudo mkdir -p "$MNT/.Trash-$ID"/{expunged,files,info} \
@@ -172,16 +172,16 @@ function essencial_packages() {
 #   && sudo chmod -R o-rwx "$MNT/.Trash-$ID"/
 
 	clear
-	make_bold_blue "Reboot the system to gvfs work"
+	bold_blue "Reboot the system to gvfs work"
 }
 
 function xfce_install() {
-	sudo pacman -S xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
+	sudo pacman -Sy xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
 }
 
 function vako_apps() {
-	make_bold_blue "Updating first"
-	sudo pacman -Syu
+	bold_blue "Updating first"
+	sudo pacman -Syyu
 
 	local TITLE="What browser do you want?"
 	local OPTIONS=(
@@ -191,33 +191,33 @@ function vako_apps() {
 	)
 	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
-	make_bold_blue "Downloading web browser"
+	bold_blue "Downloading web browser"
 	case $CHOICE in
 		1)
 			# Opera needs this codec to play spotify
-			sudo pacman -S opera opera-ffmpeg-codecs 
+			sudo pacman -Sy opera opera-ffmpeg-codecs 
 			;;
 		2)
-			sudo pacman -S firefox
+			sudo pacman -Sy firefox
 			;;
 		3)
-			sudo pacman -S opera opera-ffmpeg-codecs firefox
+			sudo pacman -Sy opera opera-ffmpeg-codecs firefox
 			;;
 	esac
 
-	make_bold_blue "Downloading some stuff"
-	sudo pacman -S discord vlc
+	bold_blue "Downloading some stuff"
+	sudo pacman -Sy discord vlc
 
 	# Vencord
-	sh -c "$(curl -sS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
+	sh -c "$(curl -SyS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
 
 	install_aur "simplescreenrecorder"
 
 
 
-	make_bold_blue "Downloading dev tools"
+	bold_blue "Downloading dev tools"
 	# C/C++ Dev tools
-	sudo pacman -S clang cmake gdb valgrind
+	sudo pacman -Sy clang cmake gdb valgrind
 
 }
 
@@ -232,17 +232,17 @@ function bashrc() {
 	# Insert bashrc
 	cat "${CONFIG_FILES_PATH}/bashrc.txt" >> "${HOME}/.bashrc"
 
-	make_bold_blue "To see the password you are typing, go to \"/etc/sudoers\" and type \"Defaults pwfeedback\", save"
+	bold_blue "To see the password you are typing, go to \"/etc/sudoers\" and type \"Defaults pwfeedback\", save"
 }
 
 function zshrc() {
 	# Install zsh
 	if ! command -v "zsh" &> /dev/null; then
-		make_bold_red "ZSH terminal is not installed"
+		bold_red "ZSH terminal is not installed"
 
 		case $(yesno_box "ZSH is not installed \nDo you want to install it?") in
 			0)
-				sudo pacman -S zsh
+				sudo pacman -Sy zsh
 				exit
 				;;
 
@@ -264,16 +264,16 @@ function zshrc() {
 	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh/zsh-autosuggestions
 
 	# Change default terminal to zsh
-	chsh -s $(which zsh)
+	chsh -Sy $(which zsh)
 }
 
 function kitty_terminal() {
 	if ! command -v "kitty" &> /dev/null; then
-		make_bold_red "Kitty terminal is not installed"
+		bold_red "Kitty terminal is not installed"
 
 		case $(yesno_box "Kitty is not installed \nDo you want to install kitty?") in
 			0)
-				sudo pacman -S kitty
+				sudo pacman -Sy kitty
 				exit
 				;;
 
@@ -286,7 +286,7 @@ function kitty_terminal() {
 
 	# If not unziped
 	if [ ! -d "${KITTY_CONFIG_PATH}" ]; then
-		make_bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
+		bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
 
 	# 	# If zip doesn't exist
 	# 	if [ ! -f "${KITTY_CONFIG_PATH}.zip" ]; then
@@ -308,13 +308,13 @@ function kitty_terminal() {
 
 function neofetch() {
 	if ! command -v "neofetch" &> /dev/null; then
-		make_bold_red "~> You have Arch, why don't you have neofetch??"
-		sudo pacman -S neofetch
+		bold_red "~> You have Arch, why don't you have neofetch??"
+		sudo pacman -Sy neofetch
 	fi
 
 	# If not unziped
 	if [ ! -d "${NEOFETCH_CONFIG_PATH}" ]; then
-		make_bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
+		bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
 
 		# If zip doesn't exist
 		# if [ ! -f "${NEOFETCH_CONFIG_PATH}.zip" ]; then
@@ -364,10 +364,10 @@ function xfce_xml() {
 }
 
 function pacman_conf() {
-	make_bold_blue "Go to \"/etc/pacman.conf\" and uncomment the following options"
-	make_yellow "Color"
-	make_yellow "CheckSpace"
-	make_yellow "ParallelDownloads = 5"
+	bold_blue "Go to \"/etc/pacman.conf\" and uncomment the following options"
+	yellow "Color"
+	yellow "CheckSpace"
+	yellow "ParallelDownloads = 5"
 }
 
 
@@ -390,14 +390,14 @@ function xfce-terminal() {
 	# Copy theme to path
 	wget https://raw.githubusercontent.com/endeavouros-team/endeavouros-xfce-terminal-colors/master/endeavouros.theme -P $COLORSCHEME_PATH
 
-	make_bold_blue "Change the terminal background color to #101017"
+	bold_blue "Change the terminal background color to #101017"
 }
 
 function kvantum() {
-	make_bold_blue "Downloading"
-	sudo pacman -S kvantum
+	bold_blue "Downloading"
+	sudo pacman -Sy kvantum
 
-	make_bold_blue "Creating config file"
+	bold_blue "Creating config file"
 	mkdir ~/.config/Kvantum/
 	echo -e "[General]\ntheme=KvArcDark" > ~/.config/Kvantum/kvantum.kvconfig
 
@@ -417,11 +417,11 @@ function icons_and_themes() {
 	list_item "Bibata Cursor" "https://www.xfce-look.org/p/1914825"
 	
 	echo -e "\n"
-	make_bold_blue "Move themes to ${BOLD}~/.themes${NC} and icons to ${BOLD}~/.icons${NC}"
+	bold_blue "Move themes to ${BOLD}~/.themes${NC} and icons to ${BOLD}~/.icons${NC}"
 
-	make_bold_red "(sorry, I am won't dowload all this and zip to github)"
+	bold_red "(sorry, I am won't dowload all this and zip to github)"
 
-	make_yellow "Catpuccin Theme colors:"
+	yellow "Catpuccin Theme colors:"
 	list_item "- Mocha" "Purple"
 	list_item "   - Alt" "Orange"
 	list_item "   - Alt2" "Folder with black details"
