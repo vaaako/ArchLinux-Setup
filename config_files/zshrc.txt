@@ -1,5 +1,8 @@
 ## ZSH CONFIG ##
 ZSH_DIR=~/.config/zsh
+# Ruby
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
 
 # HISTORY
 # ZSH don't save history by default
@@ -39,10 +42,20 @@ eval "$(zoxide init --cmd cd zsh)"
 
 
 ## ALIASES ##
+# Safe rm
+function rm () {
+	for f in "$@"
+	do
+		# mv -f "$f" "/tmp/$f"
+		mv -f "$f" ~/.local/share/Trash/files
+	done
+}
+
+alias rrm='/bin/rm -i' # Unsafe rm
+
 # Linux
 alias grep='grep --color=auto'
 alias ls='exa --icons'
-alias rm='rm -i' # Confirm before delete
 
 # Programs
 alias py='python3'
@@ -115,6 +128,9 @@ NEWLINE=$'\n'
 # PROMPT+="└─  %F{magenta}${FULL_DIR}%f ${GIT}> "
 
 
-PROMPT="${CMD_STATUS} %F{blue}(%f%F{cyan}${TIME}%f%F{blue})%f %F{magenta}${FULL_DIR}%f %F{blue}>%f "
+PROMPT="${CMD_STATUS} %F{magenta}(%f%F{blue}${TIME}%f%F{magenta})%f %F{magenta}${FULL_DIR}%f %F{blue}>%f "
 RPROMPT="${GIT}%F{blue}"
 # PROMPT='%2/ $(git_branch_name)' Created by newuser for 5.9
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

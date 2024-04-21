@@ -75,3 +75,6 @@ PS1="${GRAY}┌──${PURPLE}(${TIME}${PURPLE})" # Time
 PS1+="\n${GRAY}└─${DARK_PURPLE}" # Left
 PS1+="[${PURPLE}\u@${LIGHTPURPLE}\h${DARK_PURPLE}]:" # [username@hostname]
 PS1+="${BOLD} \w> ${NC}" # >
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
