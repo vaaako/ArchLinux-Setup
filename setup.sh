@@ -101,40 +101,40 @@ function missing_packages() {
 
 	# Audio Stream
 	bold_blue "Downloading pipewire and pavucontrol"
-	# sudo pacman -Sy pulseaudio pavucontrol
+	# sudo pacman -S pulseaudio pavucontrol
 	sudo pacman -Rdd pulseaudio # Remove pulseaudio if have
-	sudo pacman -Sy pipewire-{jack, alsa, pulse}
-	sudo pacman -Sy pavucontrol
+	sudo pacman -S pipewire-{jack, alsa, pulse}
+	sudo pacman -S pavucontrol
 
 	# Enable pipwire
 	sudo systemctl --user enable --now pipewire pipewire-pulse
 
 	# Codecs
 	bold_blue "Downloading Codecs"
-	sudo pacman -Sy ffmpeg gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-plugins-base gst-libav gstreamer
+	sudo pacman -S ffmpeg gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-plugins-base gst-libav gstreamer
 
 	# Thunar
 	bold_blue "Downloading Thunar essencial packages"
-	sudo pacman -Sy exa thunar-archive-plugin file-roller gvfs-mtp
+	sudo pacman -S exa thunar-archive-plugin file-roller gvfs-mtp
 	#              Better LS, Archive plugin, Compress manager, Connect smartphone
 
 	# Fonts
 	bold_blue "Downloading Fonts"
-	sudo pacman -Sy ttf-jetbrains-mono-nerd ttf-ubuntu-font-family ttf-liberation ttf-cascadia-code
+	sudo pacman -S ttf-jetbrains-mono-nerd ttf-ubuntu-font-family ttf-liberation ttf-cascadia-code
 	#              Nerd font               System font            Github Font    My favorite font for coding
 	
 	bold_blue "Downloading Noto Fonts"
-	sudo pacman -Sy noto-fonts noto-fonts-cjk               noto-fonts-emoji
+	sudo pacman -S noto-fonts noto-fonts-cjk               noto-fonts-emoji
 	#              Asian characters support font           Emoji font
 
 	# e.g. open browser when click a link on discord and other features
 	bold_blue "Downloading xdg-utils and xsel"
 	echo "e.g. open browser when click a link on discord and other features"
-	sudo pacman -Sy xdg-utils xsel
+	sudo pacman -S xdg-utils xsel
 
 	# Firewall
 	bold_blue "Downloading firewall"
-	sudo pacman -Sy ufw gufw
+	sudo pacman -S ufw gufw
 
 	## Start firewall
 	bold_blue "Enabling firewall"
@@ -147,24 +147,24 @@ function missing_packages() {
 
 	# If yes
 	if [ $(yesno_box "Do you want to install bluetooth?") -eq 0 ]; then
-		sudo pacman -Sy blueberry
+		sudo pacman -S blueberry
 	fi
 }
 
 
 function essencial_packages() {
 	bold_blue "Downloading git and wget"
-	sudo pacman -Sy git wget
+	sudo pacman -S git wget
 
 	# Manager of user directories (Downloads, Documents etc)
-	# sudo pacman -Sy xdg-user-dirs
+	# sudo pacman -S xdg-user-dirs
 
 	bold_blue "Downloading bash completition for pacman"
-	sudo pacman -Sy bash_completition
+	sudo pacman -S bash_completition
 
 	# Trash and devices manager
 	bold_blue "Downloading gvfs"
-	sudo pacman -Sy gvfs
+	sudo pacman -S gvfs
 
 # Just run the command bellow if gvfs don't create the trash folder
 # MNT=/; ID=$(id -u); sudo mkdir -p "$MNT/.Trash-$ID"/{expunged,files,info} \
@@ -176,7 +176,7 @@ function essencial_packages() {
 }
 
 function xfce_install() {
-	sudo pacman -Sy xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
+	sudo pacman -S xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
 }
 
 function vako_apps() {
@@ -194,31 +194,30 @@ function vako_apps() {
 	bold_blue "Downloading web browser"
 	case $CHOICE in
 		1)
-			sudo pacman -Sy firefox
+			sudo pacman -S firefox
 			;;
 		2)
 			# Opera needs this codec to play spotify
-			sudo pacman -Sy opera opera-ffmpeg-codecs 
+			sudo pacman -S opera opera-ffmpeg-codecs 
 			;;
 		3)
-			sudo pacman -Sy opera opera-ffmpeg-codecs firefox
+			sudo pacman -S opera opera-ffmpeg-codecs firefox
 			;;
 	esac
 
-	bold_blue "Downloading some stuff"
-	sudo pacman -Sy discord vlc
+	bold_blue "Downloading discord and vlc"
+	sudo pacman -S discord vlc
 
 	# Vencord
+	bold_blue "Downloading vencord"
 	sh -c "$(curl -SyS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
-
 	install_aur "simplescreenrecorder"
 
 
 
 	bold_blue "Downloading dev tools"
 	# C/C++ Dev tools
-	sudo pacman -Sy clang cmake gdb valgrind
-
+	sudo pacman -S clang cmake gdb valgrind
 }
 
 
@@ -242,7 +241,7 @@ function zshrc() {
 
 		case $(yesno_box "ZSH is not installed \nDo you want to install it?") in
 			0)
-				sudo pacman -Sy zsh
+				sudo pacman -S zsh
 				exit
 				;;
 
@@ -264,7 +263,7 @@ function zshrc() {
 	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh/zsh-autosuggestions
 
 	# Change default terminal to zsh
-	chsh -Sy $(which zsh)
+	chsh -S $(which zsh)
 }
 
 function kitty_terminal() {
@@ -273,7 +272,7 @@ function kitty_terminal() {
 
 		case $(yesno_box "Kitty is not installed \nDo you want to install kitty?") in
 			0)
-				sudo pacman -Sy kitty
+				sudo pacman -S kitty
 				exit
 				;;
 
@@ -309,7 +308,7 @@ function kitty_terminal() {
 function neofetch() {
 	if ! command -v "neofetch" &> /dev/null; then
 		bold_red "~> You have Arch, why don't you have neofetch??"
-		sudo pacman -Sy neofetch
+		sudo pacman -S neofetch
 	fi
 
 	# If not unziped
@@ -395,7 +394,7 @@ function xfce-terminal() {
 
 function kvantum() {
 	bold_blue "Downloading"
-	sudo pacman -Sy kvantum
+	sudo pacman -S kvantum
 
 	bold_blue "Creating config file"
 	mkdir ~/.config/Kvantum/
