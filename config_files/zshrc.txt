@@ -43,19 +43,20 @@ eval "$(zoxide init --cmd cd zsh)"
 
 ## ALIASES ##
 # Safe rm
-function rm () {
-	for f in "$@"
-	do
-		# mv -f "$f" "/tmp/$f"
-		mv -f "$f" ~/.local/share/Trash/files
-	done
-}
-
-alias rrm='/bin/rm -i' # Unsafe rm
+# function rm () {
+# 	for f in "$@"
+# 	do
+# 		# mv -f "$f" "/tmp/$f"
+# 		mv -f "$f" ~/.local/share/Trash/files
+# 	done
+# }
+#
+# alias rrm='/bin/rm -i' # Unsafe rm
 
 # Linux
 alias grep='grep --color=auto'
 alias ls='exa --icons'
+alias rm='rm -i'
 
 # Programs
 alias py='python3'
