@@ -194,11 +194,11 @@ function vako_apps() {
 	bold_blue "Downloading web browser"
 	case $CHOICE in
 		1)
-			# Opera needs this codec to play spotify
-			sudo pacman -Sy opera opera-ffmpeg-codecs 
+			sudo pacman -Sy firefox
 			;;
 		2)
-			sudo pacman -Sy firefox
+			# Opera needs this codec to play spotify
+			sudo pacman -Sy opera opera-ffmpeg-codecs 
 			;;
 		3)
 			sudo pacman -Sy opera opera-ffmpeg-codecs firefox
