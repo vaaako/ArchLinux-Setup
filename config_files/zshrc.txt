@@ -73,7 +73,9 @@ alias removeorphans='sudo pacman -Rc $(pacman -Qdtq)'
 alias logmein-hamachi='sudo /etc/init.d/logmein-hamachi'
 alias open-ports='sudo lsof -i -P -n | grep LISTEN'
 
-
+# rclone
+alias drive-mount='rclone mount --daemon --vfs-cache-mode full gdrive:/ ~/Drive'
+alias drive-umount='umount ~/Drive'
 
 
 
@@ -135,3 +137,6 @@ RPROMPT="${GIT}%F{blue}"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+# Created by `pipx` on 2024-04-30 22:29:17
+export PATH="$PATH:/home/vako/.local/bin"

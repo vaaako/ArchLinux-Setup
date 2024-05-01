@@ -106,7 +106,7 @@ function missing_packages() {
 	sudo pacman -S pipewire-{jack, alsa, pulse}
 	sudo pacman -S pavucontrol
 
-	# Enable pipwire
+	# Enable pipewire
 	sudo systemctl --user enable --now pipewire pipewire-pulse
 
 	# Codecs
@@ -218,6 +218,15 @@ function vako_apps() {
 	bold_blue "Downloading dev tools"
 	# C/C++ Dev tools
 	sudo pacman -S clang cmake gdb valgrind
+
+
+
+
+	# If yes
+	if [ $(yesno_box "Do you want to install bluetooth?") -eq 0 ]; then
+		sudo -v ; curl https://rclone.org/install.sh | sudo bash
+		echo -e "1. Name \"gdrive\" \n2. Choose Google Drive number \n3. Leave empty \n4. Choose 1 for full acess \n5. Leave empty \n6. Avoid advanced configuration \n7. Choose y to authenticate rclone with a browser \n8. Avoid configuring a shared drive \n9. Confirm the configuration \n10. Exit"
+	fi
 }
 
 
