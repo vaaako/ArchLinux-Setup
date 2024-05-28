@@ -13,14 +13,76 @@ fi
 
 
 ## ALIASES ##
+# Super safe rm
+function rm() {
+	local UNIX=$(date +%s)
+	local TRASH_DIR="$HOME/.local/share/Trash/files"
+	# mkdir -p "$TRASH_DIR" # Ensure path exist
+
+	for arg in "$@"; do
+		# Prevent possible mistakes
+		if [[ $arg == '*' ]] || [[ $arg == '/' ]]; then
+			echo "Warning: Use of '*' or '/' with rm is not allowed."
+			return 1
+		fi
+
+		# Check if the argument is a directory
+		if [[ -d $arg ]]; then
+			# Check if the directory is empty
+			if [[ -n $(ls -A "$arg") ]]; then
+				# Prompt user for confirmation if the directory is not empty
+				# read -p "The directory '$arg' is not empty. Are you sure you want to delete it? [y/N]: " response
+				echo -n "The directory '$arg' is not empty. Are you sure you want to delete it? [y/N]: "
+				read response
+				case "$response" in
+					[yY][eE][sS]|[yY]) # yes or y
+						;;
+					*)
+						echo "Aborted deletion of '$arg'"
+						continue
+						;;
+				esac
+			fi
+		fi
+
+		local BASENAME=$(basename "$arg")
+		local TRASH_FILE="$TRASH_DIR/$BASENAME"
+
+		# Check if the file already exists in the trash, if so, increment the prefix
+		local COUNT=2
+		local FILENAME="${BASENAME%%.*}"
+		local FILE_EXT="${BASENAME#*.}"
+		while [[ -e "$TRASH_FILE" ]]; do
+			# File don't has extension
+			if [[ $FILENAME == $FILE_EXT ]]; then
+				TRASH_FILE="$TRASH_DIR/${FILENAME}.${COUNT}"
+			else
+				TRASH_FILE="$TRASH_DIR/${FILENAME}.${COUNT}.${FILE_EXT}" # BASE_NAME.COUN.EXT - e.g. image.1.png
+			fi
+			((COUNT++))
+		done
+
+		# Move the file or directory to the trash directory with the determined filename
+		mv -f "$arg" "$TRASH_FILE"
+	done
+}
+
+
+alias rrm='/bin/rm -i' # Unsafe rm
+
 # Linux
 alias grep='grep --color=auto'
 alias ls='exa --icons'
-alias rm='rm -i' # Confirm before delete
+# alias rm='rm -i' # Confirm before delete
 
-# Programs
+# Alias
 alias py='python3'
 alias nv='nvim'
+alias icat='kitten icat'
+
+# rclone
+alias drive-mount='rclone mount --daemon --vfs-cache-mode full gdrive:/ ~/Drive'
+alias drive-umount='umount ~/Drive'
 
 # Neofetch
 alias neofetch='neofetch --source "$HOME/.config/neofetch/arch_trans.txt" --ascii_colors 14 9 15 --colors 5 4 13 9 7'
@@ -28,11 +90,11 @@ alias neowofetch='neofetch --source "$HOME/.config/neofetch/arch_trans2.txt" --a
 #alias neofetch='neofetch --source "$HOME/.config/neofetch/arch_trans.txt" --ascii_colors 2 3 15'
 #alias neowofetch='neofetch --source "$HOME/.config/neofetch/arch_trans2.txt" --ascii_colors 2 3 15'
 
-# Commands
+# Full commands
 alias removeorphans='sudo pacman -Rc $(pacman -Qdtq)'
 alias logmein-hamachi='sudo /etc/init.d/logmein-hamachi'
 alias open-ports='sudo lsof -i -P -n | grep LISTEN'
-
+alias copy-image='xclip -selection clipboard -t image/png -i'
 
 
 
