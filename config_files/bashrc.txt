@@ -26,6 +26,11 @@ function rm() {
 			return 1
 		fi
 
+		# Muscle memory
+		if [[ $arg == "-rf" ]]; then
+			continue
+		fi
+
 		# Check if the argument is a directory
 		if [[ -d $arg ]]; then
 			# Check if the directory is empty
