@@ -1,0 +1,5 @@
+MAGENTA="\[\e[38;5;198m\]"
+PINK="\[\e[38;5;13m\]"
+BLUE="\[\e[38;5;12m\]"
+CLEAN="\[\e[m\]"
+export PS1="$MAGENTA[\u]$CLEAN $PINK($BLUE\t$PINK)$CLEAN $PINK\w$CLEAN $BLUE>$CLEAN "

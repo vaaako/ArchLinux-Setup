@@ -450,7 +450,7 @@ Congratulations, your Arch Linux is installed.
 
 # Post-Installation
 Ensure that the internet is working with a `ping`.
- If `ping` returns an error, run the `sudo nmtui` command *(installed with NetworkManager)* and connect to a Wi-Fi network.
+ If `ping` returns an error, run the `sudo nmtui` command *(installed with NetworkManager)* and connect to a Wi-Fi network, on *"Active a connection"* option.
 
 
 # Interface

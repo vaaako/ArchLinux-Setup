@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-terminal" version="1.0">
+  <property name="font-name" type="string" value="JetBrainsMonoNL Nerd Font 10"/>
+  <property name="background-mode" type="string" value="TERMINAL_BACKGROUND_TRANSPARENT"/>
+  <property name="background-darkness" type="double" value="0.94999999999999996"/>
+  <property name="color-foreground" type="string" value="#e3e3ea"/>
+  <property name="color-background" type="string" value="#101010101717"/>
+  <property name="color-background-vary" type="bool" value="false"/>
+  <property name="color-cursor-foreground" type="string" value="#FFFFFF"/>
+  <property name="color-cursor" type="string" value="#ff7f7f"/>
+  <property name="color-cursor-use-default" type="bool" value="false"/>
+  <property name="color-selection" type="string" value=""/>
+  <property name="color-selection-background" type="string" value=""/>
+  <property name="color-selection-use-default" type="bool" value="true"/>
+  <property name="color-bold" type="string" value="#7fbaff"/>
+  <property name="color-bold-use-default" type="bool" value="true"/>
+  <property name="color-palette" type="string" value="rgb(8,5,43);rgb(255,127,127);rgb(127,63,191);rgb(204,57,128);rgb(127,186,255);rgb(127,63,191);rgb(127,127,255);rgb(205,204,219);rgb(127,186,255);rgb(255,127,127);rgb(153,153,204);rgb(255,127,127);rgb(127,127,255);rgb(127,63,191);rgb(127,127,255);rgb(227,227,234)"/>
+  <property name="color-bold-is-bright" type="bool" value="false"/>
+  <property name="color-use-theme" type="bool" value="false"/>
+  <property name="tab-activity-color" type="string" value="#47B35D"/>
+  <property name="title-initial" type="string" value="Terminal"/>
+  <property name="title-mode" type="string" value="TERMINAL_TITLE_HIDE"/>
+  <property name="misc-default-geometry" type="string" value="85x20"/>
+</channel>

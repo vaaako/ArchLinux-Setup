@@ -1,0 +1,41 @@
+.xfce4-panel#XfcePanelWindow {
+	border-radius: 13px;
+}
+
+.xfce4-panel .tasklist .toggle:checked {
+	border-radius: 10px;
+}
+
+/* Buttons selected */
+.tasklist button:checked {
+	border-bottom: 1px solid white;
+}
+
+
+/* Buttons */
+/*
+.flat, .toggle {
+	font-family: 'JetBrainsMono Nerd Font';
+	font-size: 16px;
+	padding: 4px;
+}
+*/
+
+/* Buttons on mouse hover */
+.flat:hover, .toggle:hover {
+	font-family: 'JetBrainsMono Nerd Font';
+	font-size: 14px;
+	padding: 4px;
+
+	border: 1px solid aliceblue;
+}
+
+/* Buttons selected */
+.flat:checked, .toggle:checked {
+	font-family: 'JetBrainsMono Nerd Font';
+	font-size: 14px;
+	padding: 4px;
+  
+	border-bottom: 1px solid aliceblue;
+}
+

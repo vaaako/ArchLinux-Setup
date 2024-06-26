@@ -350,8 +350,8 @@ function panel_css() {
 		mkdir -p $GTK_PATH 
 	fi
 
-	cp "${XFCE_CONFIG_PATH}/gtk.css" $GTK_PATH
-	xfce-panel -r
+	cp "${CONFIG_FILES_PATH}/gtk.css" $GTK_PATH
+	xfce-panel -r # Restart panel
 }
 
 
