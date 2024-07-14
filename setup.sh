@@ -8,9 +8,9 @@ HEIGHT=15
 WIDTH=30
 
 CONFIG_FILES_PATH="$(pwd)/config_files"
-XFCE_CONFIG_PATH="${CONFIG_FILES_PATH}/xfce"
-KITTY_CONFIG_PATH="${CONFIG_FILES_PATH}/kitty"
-NEOFETCH_CONFIG_PATH="${CONFIG_FILES_PATH}/neofetch"
+XFCE_CONFIG_PATH=$CONFIG_FILES_PATH/xfce
+KITTY_CONFIG_PATH=$CONFIG_FILES_PATH/kitty
+NEOFETCH_CONFIG_PATH=$CONFIG_FILES_PATH/neofetch
 
 BOLD="\033[1m"
 NC="\033[0m"
@@ -19,8 +19,8 @@ NC="\033[0m"
 # UTILS
 #####
 
-# Display dialog menu box
 function menu_box() {
+# Display dialog menu box
 	local TITLE="$1"
 	shift # Shift to take options
 	local OPTIONS=("$@")
@@ -52,19 +52,23 @@ function yesno_box() {
 
 
 
-function install_aur() {
-	git clone "https://aur.archlinux.org/$1.git"
-	cd "$1"
-	makepkg -Syi
-	cd ..
-	sudo rm -rf "$1"
+function check_yay() {
+	if [ -f /usr/bin/yay ]; then
+		bold_red "yay not found, installing it"
+
+		git clone "https://aur.archlinux.org/yay.git"
+		cd yay
+		makepkg -si
+		cd ..
+		sudo rm -rf yay
+	fi
 }
 
 function list_item() {
 	local MAGENTA="\033[1;35m"
 	local BLUE="\e[1;34m"
 
-	echo -e "${BOLD}${BLUE}$1:${NC} $2"
+	echo -e $BOLD${BLUE}$1:${NC} $2
 }
 
 function bold_blue() {
@@ -76,7 +80,7 @@ function bold_blue() {
 function bold_red() {
 	local RED="\e[1;31m"
 
-	echo -e "${BOLD}~> ${RED}$1${NC}\n"
+	echo -e "\n\n${BOLD}~> ${RED}$1${NC}\n"
 }
 
 function yellow() {
@@ -96,6 +100,8 @@ function yellow() {
 #
 
 function missing_packages() {
+	check_yay
+
 	bold_blue "Updating first"
 	sudo pacman -Syyu
 
@@ -103,8 +109,8 @@ function missing_packages() {
 	bold_blue "Downloading pipewire and pavucontrol"
 	# sudo pacman -S pulseaudio pavucontrol
 	sudo pacman -Rdd pulseaudio # Remove pulseaudio if have
-	sudo pacman -S pipewire-{jack, alsa, pulse}
-	sudo pacman -S pavucontrol
+	sudo pacman -S pipewire-jack pipewire-alsa pipewire-pulse
+	sudo pacman -S pavucontrol # Audio mixer
 
 	# Enable pipewire
 	sudo systemctl --user enable --now pipewire pipewire-pulse
@@ -143,7 +149,7 @@ function missing_packages() {
 
 	# Mugshot
 	bold_blue "Downloading mugshot"
-	install_aur "mugshot"
+	yay -S mugshot --noconfirm
 
 	# If yes
 	if [ $(yesno_box "Do you want to install bluetooth?") -eq 0 ]; then
@@ -153,17 +159,19 @@ function missing_packages() {
 
 
 function essencial_packages() {
+	check_yay
+
 	bold_blue "Downloading git and wget"
 	sudo pacman -S git wget
 
 	# Manager of user directories (Downloads, Documents etc)
 	# sudo pacman -S xdg-user-dirs
 
-	bold_blue "Downloading bash completition for pacman"
-	sudo pacman -S bash_completition
+	# bold_blue "Downloading bash completition for pacman"
+	# sudo pacman -S bash_completition
 
 	# Trash and devices manager
-	bold_blue "Downloading gvfs"
+	bold_blue "Downloading gvfs - Trash and devices manager"
 	sudo pacman -S gvfs
 
 # Just run the command bellow if gvfs don't create the trash folder
@@ -185,16 +193,19 @@ function remove_bloatware() {
 }
 
 function vako_apps() {
+	check_yay
+
 	bold_blue "Updating first"
 	sudo pacman -Syyu
 
-	local TITLE="What browser do you want?"
+	local TITLE="Which browser do you want to install?"
 	local OPTIONS=(
 		1 "Firefox"
 		2 "Opera"
 		3 "Both"
+		4 "None"
 	)
-	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "$TITLE" "${OPTIONS[@]}")
 
 	bold_blue "Downloading web browser"
 	case $CHOICE in
@@ -208,20 +219,43 @@ function vako_apps() {
 		3)
 			sudo pacman -S opera opera-ffmpeg-codecs firefox
 			;;
+		4)
+			;;
 	esac
 
-	bold_blue "Downloading discord and vlc"
-	sudo pacman -S discord vlc
+	bold_blue "Downloading vlc"
+	sudo pacman -S vlc
 
-	# Vencord
-	bold_blue "Downloading vencord"
-	sh -c "$(curl -SyS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
-	install_aur "simplescreenrecorder"
+	local TITLE="What discord client do you want to install?"
+	local OPTIONS=(
+		1 "Discord + Vencord"
+		2 "Vesktop"
+		3 "None"
+	)
+	local CHOICE=$(menu_box "$TITLE" "${OPTIONS[@]}")
+	case $CHOICE in
+		1)
+			sudo pacman -S discord
+			# Vencord
+			bold_blue "Downloading vencord"
+			sh -c "$(curl -SyS https://raw.githubusercontent.com/Vendicated/VencordInstaller/main/install.sh)"
+			;;
+		2)
+			yay -S vesktop --noconfirm
+			;;
+		3)
+			;;
+	esac
+
+
+	bold_blue "Downloading simplescreenrecorder"
+	yay -S simplescreenrecorder --noconfirm
 
 
 
 	bold_blue "Downloading dev tools"
 	# C/C++ Dev tools
+	sudo pacman -S --needed base-devel git
 	sudo pacman -S clang cmake gdb valgrind
 
 
@@ -243,7 +277,7 @@ function vako_apps() {
 #
 function bashrc() {
 	# Insert bashrc
-	cat "${CONFIG_FILES_PATH}/bashrc.txt" >> "${HOME}/.bashrc"
+	cat $CONFIG_FILES_PATH/bashrc.txt >> $HOME/.bashrc
 
 	bold_blue "To see the password you are typing, go to \"/etc/sudoers\" and type \"Defaults pwfeedback\", save"
 }
@@ -271,7 +305,7 @@ function zshrc() {
 	mkdir -p ~/.config/zsh
 
 	# Insert zshrc
-	cat "${CONFIG_FILES_PATH}/zshrc.txt" >> "${HOME}/.zshrc"
+	cat $CONFIG_FILES_PATH/zshrc.txt >> $HOME/.zshrc
 
 	# Download suggestions plugin
 	git clone https://github.com/zsh-users/zsh-autosuggestions ~/.config/zsh/zsh-autosuggestions
@@ -298,24 +332,24 @@ function kitty_terminal() {
 	fi
 
 	# If not unziped
-	if [ ! -d "${KITTY_CONFIG_PATH}" ]; then
+	if [ ! -d $KITTY_CONFIG_PATH ]; then
 		bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
 
 	# 	# If zip doesn't exist
-	# 	if [ ! -f "${KITTY_CONFIG_PATH}.zip" ]; then
+	# 	if [ ! -f $KITTY_CONFIG_PATH.zip ]; then
 	# 		echo "~> Missing file ${KITTY_CONFIG_PATH}.zip"
 	# 	fi
 	#
-	# 	unzip "${KITTY_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+	# 	unzip $KITTY_CONFIG_PATH.zip -d $CONFIG_FILES_PATH
 	fi
 
-	local KITTY_PATH="${HOME}/.config/kitty"
+	local KITTY_PATH=$HOME/.config/kitty
 
 	# Make backup
-	cp "${KITTY_PATH}/kitty.conf" "${KITTY_PATH}/kitty.conf.bak"
+	cp $KITTY_PATH/kitty.conf $KITTY_PATH/kitty.conf.bak
 
 	# Copy files
-	cp "${KITTY_CONFIG_PATH}"/*.conf "${KITTY_PATH}"
+	cp $KITTY_CONFIG_PATH/*.conf $KITTY_PATH
 
 }
 
@@ -326,54 +360,54 @@ function neofetch() {
 	fi
 
 	# If not unziped
-	if [ ! -d "${NEOFETCH_CONFIG_PATH}" ]; then
+	if [ ! -d $NEOFETCH_CONFIG_PATH ]; then
 		bold_red "~> Missing folder ${NEOFETCH_CONFIG_PATH}"
 
 		# If zip doesn't exist
-		# if [ ! -f "${NEOFETCH_CONFIG_PATH}.zip" ]; then
+		# if [ ! -f $NEOFETCH_CONFIG_PATH.zip ]; then
 		# 	echo "~> Missing file ${NEOFETCH_CONFIG_PATH}.zip"
 		# 	exit
 		# fi
 		#
-		# unzip "${NEOFETCH_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+		# unzip $NEOFETCH_CONFIG_PATH.zip -d $CONFIG_FILES_PATH
 	fi
 
-	local NEOFETCH_PATH="${HOME}/.config/neofetch"
+	local NEOFETCH_PATH=$HOME/.config/neofetch
 
 	# Make backup
-	cp "${NEOFETCH_PATH}/config.conf" "${NEOFETCH_PATH}/config.conf.bak"
+	cp $NEOFETCH_PATH/config.conf $NEOFETCH_PATH/config.conf.bak
 
 	# Copy files
-	cp $NEOFETCH_CONFIG_PATH/*.txt "${NEOFETCH_CONFIG_PATH}/config.conf" $NEOFETCH_PATH
+	cp $NEOFETCH_CONFIG_PATH/*.txt $NEOFETCH_CONFIG_PATH/config.conf $NEOFETCH_PATH
 }
 
 
 function panel_css() {
-	local GTK_PATH="${HOME}/.config/gtk-3.0/"
+	local GTK_PATH=$HOME/.config/gtk-3.0/
 
 	if [ ! -d $GTK_PATH ]; then
 		mkdir -p $GTK_PATH 
 	fi
 
-	cp "${CONFIG_FILES_PATH}/gtk.css" $GTK_PATH
+	cp $CONFIG_FILES_PATH/gtk.css $GTK_PATH
 	xfce-panel -r # Restart panel
 }
 
 
 function xfce_xml() {
 	# If not unziped
-	if [ ! -d "${XFCE_CONFIG_PATH}" ]; then
+	if [ ! -d $XFCE_CONFIG_PATH ]; then
 		# If zip doesn't exist
-		if [ ! -f "${XFCE_CONFIG_PATH}.zip" ]; then
+		if [ ! -f $XFCE_CONFIG_PATH.zip ]; then
 			echo "~> Missing file ${XFCE_CONFIG_PATH}.zip"
 			exit
 		fi
 
-		unzip "${XFCE_CONFIG_PATH}.zip" -d "${CONFIG_FILES_PATH}"
+		unzip $XFCE_CONFIG_PATH.zip -d $CONFIG_FILES_PATH
 	fi
 
 	# Copy all files
-	cp "$XFCE_CONFIG_PATH"/*.xml "${HOME}/.config/xfce/xfconf/xfce-perchannel-xml"
+	cp "$XFCE_CONFIG_PATH"/*.xml $HOME/.config/xfce/xfconf/xfce-perchannel-xml
 }
 
 function pacman_conf() {
@@ -394,7 +428,7 @@ function pacman_conf() {
 # Themes #
 #
 function xfce-terminal() {
-	local COLORSCHEME_PATH="${HOME}/.local/share/xfce/terminal/colorschemes"
+	local COLORSCHEME_PATH=$HOME/.local/share/xfce/terminal/colorschemes
 
 	if [ ! -d $COLORSCHEME_PATH ]; then
 		mkdir -p $COLORSCHEME_PATH
@@ -459,7 +493,7 @@ function main() {
 		3 "Themes"
 		4 "Exit"
 	)
-	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "$TITLE" "${OPTIONS[@]}")
 
 	case $CHOICE in
 		1)
@@ -488,7 +522,7 @@ function install_sec() {
 		5 "Remove bloatware"
 		6 "Back"
 	)
-	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "$TITLE" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
@@ -525,7 +559,7 @@ function config_sec() {
 		7 "Pacman"
 		8 "Back"
 	)
-	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "$TITLE" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
@@ -564,7 +598,7 @@ function theme_sec() {
 		3 "Kvantum"
 		4 "Back"
 	)
-	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
+	local CHOICE=$(menu_box "$TITLE" "${OPTIONS[@]}")
 
 	clear
 	case $CHOICE in
