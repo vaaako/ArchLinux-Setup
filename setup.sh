@@ -179,6 +179,11 @@ function xfce_install() {
 	sudo pacman -S xorg xfce4 xfce4-terminal xfce4-goodies xfce4-whiskermenu-plugin lightdm lightdm-gtk-greeter
 }
 
+function remove_bloatware() {
+	sudo pacman -Rs audacious parole qvidcap xfburn zam-plugins calfjackhost
+	sudo pacman -Rdd v4l-utils
+}
+
 function vako_apps() {
 	bold_blue "Updating first"
 	sudo pacman -Syyu
@@ -315,7 +320,7 @@ function kitty_terminal() {
 }
 
 function neofetch() {
-	if ! command -v "neofetch" &> /dev/null; then
+	if [ ! command -v "neofetch" &> /dev/null ]; then
 		bold_red "~> You have Arch, why don't you have neofetch??"
 		sudo pacman -S neofetch
 	fi
@@ -480,7 +485,8 @@ function install_sec() {
 		2 "Essencial Packages"
 		3 "Vako Apps"
 		4 "XFCE Install"
-		5 "Back"
+		5 "Remove bloatware"
+		6 "Back"
 	)
 	local CHOICE=$(menu_box "${TITLE}" "${OPTIONS[@]}")
 
@@ -499,6 +505,9 @@ function install_sec() {
 			xfce_install
 			;;
 		5)
+			remove_bloatware
+			;;
+		6)
 			main
 			;;
 	esac

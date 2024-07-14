@@ -42,7 +42,7 @@
       <property name="&lt;Primary&gt;&lt;Alt&gt;f" type="string" value="thunar"/>
       <property name="override" type="bool" value="true"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Delete" type="string" value="xfce4-taskmanager"/>
-      <property name="&lt;Primary&gt;space" type="string" value="xfce4-appfinder">
+      <property name="&lt;Primary&gt;&lt;Shift&gt;space" type="string" value="xfce4-appfinder">
         <property name="startup-notify" type="bool" value="true"/>
       </property>
     </property>

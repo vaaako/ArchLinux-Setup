@@ -32,6 +32,8 @@ cp ~/.bashrc $CONFIG_DIR/bashrc.txt
 
 # XML
 cp $XML/*.xml $CONFIG_DIR/xfce4 
+rm $CONFIG_DIR/displays.xml $CONFIG_DIR/pointers.xml $CONFIG_DIR/parole.xml $CONFIG_DIR/ristretto.xml # Files that may contain not cool information for public (mouse and monitor names, home directory name)
 
 # gtk
 cp $GTK/gtk.css $CONFIG_DIR
+
