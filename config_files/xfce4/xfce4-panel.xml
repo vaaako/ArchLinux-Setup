@@ -90,6 +90,8 @@
         <value type="string" value="chrome_status_icon_1"/>
       </property>
       <property name="known-legacy-items" type="array">
+        <value type="string" value="pamac-tray"/>
+        <value type="string" value="calfjackhost"/>
         <value type="string" value="blueberry-tray.py"/>
         <value type="string" value="xfce4-power-manager"/>
         <value type="string" value="task manager"/>
@@ -143,15 +145,12 @@
     <property name="plugin-7" type="string" value="whiskermenu">
       <property name="recent" type="array">
         <value type="string" value="vesktop.desktop"/>
-        <value type="string" value="simplescreenrecorder.desktop"/>
-        <value type="string" value="steam.desktop"/>
-        <value type="string" value="imagewriter.desktop"/>
-        <value type="string" value="vlc.desktop"/>
-        <value type="string" value="com.github.wwmm.pulseeffects.desktop"/>
-        <value type="string" value="gimp.desktop"/>
+        <value type="string" value="gparted.desktop"/>
         <value type="string" value="org.gnome.Calculator.desktop"/>
-        <value type="string" value="sublime_merge.desktop"/>
-        <value type="string" value="discord.desktop"/>
+        <value type="string" value="xfce-keyboard-settings.desktop"/>
+        <value type="string" value="xfce-display-settings.desktop"/>
+        <value type="string" value="io.github.flattool.Warehouse.desktop"/>
+        <value type="string" value="steam.desktop"/>
       </property>
       <property name="hover-switch-category" type="bool" value="true"/>
       <property name="launcher-show-tooltip" type="bool" value="true"/>

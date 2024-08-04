@@ -256,7 +256,9 @@ function vako_apps() {
 	bold_blue "Downloading dev tools"
 	# C/C++ Dev tools
 	sudo pacman -S --needed base-devel git
-	sudo pacman -S clang cmake gdb valgrind
+	sudo pacman -S clang cmake gdb valgrind bear mingw-w64-gcc
+	# bear: bear -- make to make compile_commands.json
+	# x86_64-w64-mingw32-g++ -o my_program.exe my_program.cpp
 
 
 

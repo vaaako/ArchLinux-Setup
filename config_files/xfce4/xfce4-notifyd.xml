@@ -9,6 +9,8 @@
       <value type="string" value="discord"/>
       <value type="string" value="Firefox"/>
       <value type="string" value="kitty"/>
+      <value type="string" value="org.manjaro.pamac.manager"/>
+      <value type="string" value="org.manjaro.pamac.tray"/>
       <value type="string" value="org.qbittorrent.qBittorrent"/>
       <value type="string" value="org.xfce.Thunar"/>
       <value type="string" value="Spotify"/>
