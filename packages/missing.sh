@@ -6,7 +6,7 @@ apps=("Pulseaudio" "Pulseaudio, alsa and Pavucontrol" on \
 	"Thunar" "Thunar plugins and File manager utilities" on \
 	"Fonts" "" on \
 	"xdg" "(Open browser when clicking a link and other utilities)" on \
-	"galculator" "Calculator" on \
+	"calculator" "" on \
 	"Firewall" "" on \
 	"Mugshot" "" on)
 
@@ -112,14 +112,14 @@ for app in "${selected_apps_array[@]}"; do
 			sudo pacman -S xdg-utils xsel
 			;;
 
-		"galculator")
+		"calculator")
 			echo "================================="
 			echo -e "\033[1m~> [GALCULATOR] Installing the following packages:\033[0m"
-			echo "- galculator: XFCE4 calculator"
+			echo "- gnome-calculator: Some calculator"
 			echo "================================="
 			echo
 
-			sudo pacman -S galculator
+			sudo pacman -S gnome-calculator
 			;;
 
 		"Firewall")

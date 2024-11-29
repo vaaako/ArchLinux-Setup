@@ -6,12 +6,14 @@ NEOFETCH_DIR=~/.config/neofetch
 KITTY_DIR=~/.config/kitty
 ZSH_DIR=~/.config/zsh
 XFCE4_DIR=~/.config/xfce4/xfconf/xfce-perchannel-xml
+XFCE4PANEL_DIR=~/.config/xfce4/panel
 GTK_DIR=~/.config/gtk-3.0
 
 # TODO -- Put this on an array to make dirs dinamically
 NEOFETCH_TARGET=$BACKUP_DIR/neofetch
 KITTY_TARGET=$BACKUP_DIR/kitty
 XFCE4_TARGET=$BACKUP_DIR/xfce4
+XFCE4PANEL_TARGET=$BACKUP_DIR/xfce4-panel
 GTK_TARGET=$BACKUP_DIR/gtk
 DOTFILES_TARGET=$BACKUP_DIR/dotfiles
 PACMAN_TARGET=$BACKUP_DIR/pacman
@@ -36,6 +38,10 @@ fi
 
 if [ ! -d $XFCE4_TARGET ]; then
 	mkdir $XFCE4_TARGET
+fi
+
+if [ ! -d $XFCE4PANEL_TARGET ]; then
+	mkdir $XFCE4PANEL_TARGET
 fi
 
 if [ ! -d $GTK_TARGET ]; then
@@ -68,11 +74,16 @@ cp $XFCE4_DIR/*.xml $XFCE4_TARGET
 rm $XFCE4_TARGET/displays.xml \
 	$XFCE4_TARGET/xfce4-power-manager.xml \
 	$XFCE4_TARGET/xfce4-screenshooter.xml \
-	$XFCE4_TARGET/xfce4-taskmanager.xml \
+	$XFCE4_TARGET/xfce4-taskmanager.xml
 	#$XFCE4_TARGET/pointers.xml \
-	$XFCE4_TARGET/parole.xml \
-	$XFCE4_TARGET/ristretto.xml
+	# $XFCE4_TARGET/parole.xml \
+	# $XFCE4_TARGET/ristretto.xml
 
+# why i need permission to delete these???
+sudo rm $XFCE4_TARGET/parole.xml $XFCE4_TARGET/ristretto.xml
+
+# XFCE4 PANEL
+cp -r $XFCE4PANEL_DIR $XFCE4PANEL_TARGET
 
 # GTK_DIR
 cp $GTK_DIR/* $GTK_TARGET
