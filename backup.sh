@@ -21,6 +21,16 @@ PACMAN_TARGET=$BACKUP_DIR/pacman
 # Reset before backup
 if [ "$1" == "-d" ]; then
 	rm -rf $BACKUP_DIR
+
+elif [ -n "$1" ]; then
+	echo "Argument not recognized, possible argument is -d to delete backup folder before backup"
+	exit
+fi
+
+# Check if is sudo
+if [ "$EUID" -eq 0 ]; then
+	echo "Please, do not run as sudo"
+	exit
 fi
 
 # Make dirs
@@ -90,3 +100,6 @@ cp $GTK_DIR/* $GTK_TARGET
 
 # PACMAN
 cp /etc/pacman.conf $PACMAN_TARGET
+
+
+echo "Backup done!"
