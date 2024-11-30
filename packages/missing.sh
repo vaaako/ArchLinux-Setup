@@ -49,11 +49,11 @@ for app in "${selected_apps_array[@]}"; do
 			echo "================================="
 			echo
 
-			sudo pacman -Rdd pulseaudio # Remove pulseaudio if have
+			sudo pacman -Rcns pulseaudio # Remove pulseaudio if have
 			sudo pacman -S pipewire-jack pipewire-alsa pipewire-pulse pavucontrol
 
 			# Enable pipewire
-			sudo systemctl enable --now pipewire pipewire-pulse
+			systemctl enable --now --user pipewire-pulse
 			;;
 
 		"Codecs")
@@ -105,11 +105,12 @@ for app in "${selected_apps_array[@]}"; do
 			echo "================================="
 			echo -e "\033[1m~> [XDG] Installing the following packages:\033[0m"
 			echo "- xdg-utils: Set of utilities for MIME applications"
+			echo "- xdg-user-dirs: Make default home directories"
 			echo "- xsel: Get content of selection"
 			echo "================================="
 			echo
 
-			sudo pacman -S xdg-utils xsel
+			sudo pacman -S xdg-utils xdg-user-dirs xsel
 			;;
 
 		"calculator")
@@ -133,7 +134,7 @@ for app in "${selected_apps_array[@]}"; do
 			sudo pacman -S ufw gufw
 
 			if whiptail --title "Enable firewall?" --yesno "Do you want to enable firewall?" 10 60; then
-				sudo systemctl enable --now pipewire pipewire-pulse
+				sudo systemctl enable --now ufw
 			fi
 			;;
 

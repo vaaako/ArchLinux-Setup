@@ -6,11 +6,10 @@ apps=("parole" "Media player" on \
 	"qv4l2" "video4linux interface tool" on)
 
 # Display the checklist and capture the selected options
-selected_apps=$(whiptail --title "Missing packages" --backtitle "Use space to select" --checklist "Choose" 16 78 10 "${apps[@]}" 3>&1 1>&2 2>&3)
+selected_apps=$(whiptail --title "Remove bloatware" --backtitle "Use space to select" --checklist "Choose" 16 78 10 "${apps[@]}" 3>&1 1>&2 2>&3)
 
 # Convert selected options to an array
 selected_apps_array=($(echo "$selected_apps" | tr -d '"'))
-
 
 for app in "${selected_apps_array[@]}"; do
 	echo "================================="
@@ -18,11 +17,6 @@ for app in "${selected_apps_array[@]}"; do
 	echo "================================="
 	echo
 
-	sudo pacman -Rns $app
+	sudo pacman -Rncs $app
 done
 
-# sudo pacman -Rns audacious parole qvidcap xfburn zam-plugins calfjackhost
-# sudo pacman -Rns audacious parole qvidcap xfburn
-sudo pacman -Rns parole xfburn
-sudo pacman -Rns qvidcap
-# sudo pacman -Rdd v4l-utils

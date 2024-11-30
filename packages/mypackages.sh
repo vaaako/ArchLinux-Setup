@@ -120,7 +120,7 @@ for app in "${selected_apps_array[@]}"; do
 			echo "================================="
 			echo
 
-			yay -S discord
+			yay -S vesktop-bin
 			;;
 
 		"vencord")
@@ -135,19 +135,34 @@ for app in "${selected_apps_array[@]}"; do
 
 		# Penultimate because of the explanation
 		"devtools")
-			sudo pacman -S --needed base-devel git clang cmake gdb valgrind bear mingw-w64-gcc
+			echo "================================="
+			echo -e "\033[1m~> Installing the following packages:\033[0m"
+			echo "- base-devel"
+			echo "- git"
+			echo "- lazygit"
+			echo "- clang"
+			echo "- make"
+			echo "- cmake"
+			echo "- gdb"
+			echo "- valgrind"
+			echo "- beark"
+			echo "- mingw-w64-gcc"
+			echo "================================="
+			echo
+
+			sudo pacman -S --needed base-devel git clang make cmake gdb valgrind bear mingw-w64-gcc
 
 			# bear: bear -- make to make compile_commands.json
 			# x86_64-w64-mingw32-g++ -o myexec.exe main.cpp
 			echo "================================="
 			echo -e "\033[1m~> Usage example:\033[0m"
-			echo "\t\033[1m~> bear:\033[0m"
-			echo "\t\t~> Generate compile_commands.json:"
-			echo "\t\tbear -- make"
+			echo -e "\t\033[1m~> bear:\033[0m"
+			echo -e "\t\t~> Generate compile_commands.json:"
+			echo -e "\t\tbear -- make"
 			echo
-			echo "\t\033[1m~> mingw:\033[0m"
-			echo "\t\t~> Compile with mingw:"
-			echo "\t\tx86_64-w64-mingw32-g++ -o myexec.exe main.cpp"
+			echo -e "\t\033[1m~> mingw:\033[0m"
+			echo -e "\t\t~> Compile with mingw:"
+			echo -e "\t\tx86_64-w64-mingw32-g++ -o myexec.exe main.cpp"
 			echo "================================="
 			echo
 
