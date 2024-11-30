@@ -16,7 +16,7 @@ Configuration related
 ## packages/
 Applications related scripts
 
-- [bloatware_remove.sh](packages/blotware_remove.sh): Remove *xfce4* bloatware packages
+- [bloatware_remove.sh](packages/bloatware_remove.sh): Remove *xfce4* bloatware packages
 - [missing.sh](packages/missing.sh): Usefull packages that *xfce4* should come with
 - [mypackages.sh](packages/mypackages.sh): Packages that I use daily on my environment
 - [yay_install.sh](packages/yay_install.sh): Install [`yay`](https://github.com/Jguer/yay)
