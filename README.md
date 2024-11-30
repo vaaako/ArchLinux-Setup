@@ -16,11 +16,11 @@ Configuration related
 ## packages/
 Applications related scripts
 
-- [bloatware_remove.sh](configs/blotware_remove.sh): Remove *xfce4* bloatware packages
-- [missing.sh](configs/missing.sh): Usefull packages that *xfce4* should come with
-- [mypackages.sh](configs/mypackages.sh): Packages that I use daily on my environment
-- [yay_install.sh](configs/yay_install.sh): Install [`yay`](https://github.com/Jguer/yay)
-- [zsh_setup.sh](configs/yay_install.sh): Install and setup my `zsh` shell
+- [bloatware_remove.sh](packages/blotware_remove.sh): Remove *xfce4* bloatware packages
+- [missing.sh](packages/missing.sh): Usefull packages that *xfce4* should come with
+- [mypackages.sh](packages/mypackages.sh): Packages that I use daily on my environment
+- [yay_install.sh](packages/yay_install.sh): Install [`yay`](https://github.com/Jguer/yay)
+- [zsh_setup.sh](packages/yay_install.sh): Install and setup my `zsh` shell
 
 ## system/
 Packages related to the Linux System
