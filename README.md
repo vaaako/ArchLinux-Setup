@@ -11,7 +11,7 @@ Backup and Restore scripts
 ## configs/
 Configuration related
 
-- [makeconfigs.sh](configs/icons_and_themes.sh): Add my configuration to `sudoers` (show password stars), `lightdm` and `fstab`
+- [makeconfigs.sh](configs/makeconfigs.sh): Add my configuration to `sudoers` (show password stars), `lightdm` and `fstab`
 
 ## packages/
 Applications related scripts
@@ -20,12 +20,12 @@ Applications related scripts
 - [missing.sh](packages/missing.sh): Usefull packages that *xfce4* should come with
 - [mypackages.sh](packages/mypackages.sh): Packages that I use daily on my environment
 - [yay_install.sh](packages/yay_install.sh): Install [`yay`](https://github.com/Jguer/yay)
-- [zsh_setup.sh](packages/yay_install.sh): Install and setup my `zsh` shell
+- [zsh_setup.sh](packages/zsh_setup.sh): Install and setup my `zsh` shell
 
 ## system/
 Packages related to the Linux System
 
 - [amd_gpu.sh](system/amd_gpu.sh): Install video driver and drivers for helping with the AMD GPU *(AMD has native support but whatever)*
-- [xfce4_install.sh](system/amd_gpu.sh): Install *xfce4* for when I am installing *Arch Linux*
+- [xfce4_install.sh](system/xfce4_install.sh): Install *xfce4* for when I am installing *Arch Linux*
 
 
