@@ -1,5 +1,0 @@
-Bibata classic (icon): https://ocs-dl.fra1.cdn.digitaloceanspaces.com/data/files/1664806500/Bibata-Modern-Classic.tar.xz?response-content-disposition=attachment%3B%2520Bibata-Modern-Classic.tar.xz&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=RWJAQUNCHT7V2NCLZ2AL%2F20240912%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240912T220813Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=2039e8bef180142b4ebd87233eeeda2cb32cba426573f4aee92db0a05104d24b
-https://www.pling.com/p/1715570/
-
-Catppuccin Icon (icon): https://ocs-dl.fra1.cdn.digitaloceanspaces.com/data/files/1645386593/Catppuccin-Mocha.zip?response-content-disposition=attachment%3B%2520Catppuccin-Mocha.zip&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=RWJAQUNCHT7V2NCLZ2AL%2F20240912%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240912T224926Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=e23274804da1c3e2ce76101ae39074d1d97dc737845f802965bf05cd94e65b2f
-https://www.pling.com/p/1715570/
