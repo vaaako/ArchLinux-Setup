@@ -1,0 +1,10 @@
+
+# 1TB HD
+/dev/sdb1 /mnt/WD-1TB ntfs-3g defaults,uid=1000,gid=1000,umask=022,x-gvfs-show 0 0
+
+# defaults: commons options (rw, suid, dev, exec, auto, nouser, async)
+# uid=1000: owner of the mounted files to the user with UID 1000 (me)
+# gid=1000: group owner of the mounted files
+# umask=002: permission rwxr-xr-x for directories and rw-r--r-- for files
+# 0 0: disable dump and disable filesystem check
+# x-gvfs-show: show on thunar
