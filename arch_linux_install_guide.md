@@ -1,24 +1,21 @@
-# NOT FINISHED!
-- Remove all from dual-boot
-- Revise
-- Rewrite
-
-
 # Pre-Install
+## UEFI
+Before starting the installation, ensure that the **installation media** you're using is set to **UEFI mode**, as the installation will not work otherwise
+
 ## Internet
+For *ethernet* connections, simply connect the cable.
+
 First, check if it's blocked with `rfkill`:
 ```sh
 rfkill
 ```
 
-If it's *soft-blocked*, unblock it with the command bellow:
+If it's *soft-blocked*, unblock it with the command below:
 ```sh
 rfkill unblock wlan
 ```
 
-For *Ethernet* connections, simply connect the cable.
-
-Use the command bellow to check your Wi-Fi card:
+Use the command below to check your wifi device:
 ```sh
 iwctl
 ```
@@ -30,11 +27,11 @@ List all available devices:
 
 Then scan and connect to a network:
 ```sh
-[iwd]# station *device* scan
-[iwd]# station *device* get-networks
-[iwd]# station *device* connect *SSID*
+[iwd]# station device scan
+[iwd]# station device get-networks
+[iwd]# station device connect SSID
 ```
-> *Device* represents your Wi-Fi card, and *SSID* is the Wi-Fi name.
+Where `device` is the name of your wifi device and `SSID` is the wifi name
 
 Finally, store the password *(for automatic connection)*:
 ```sh
@@ -46,34 +43,14 @@ Test the connection:
 ping archlinux.org
 ```
 
-<!--
-# Time
-Before moving to the partitioning part, I wanted to adjust the time just for fun.
-
-Check the system time with:
-```sh
-timedatectl
-```
-
-Then find the command to list timezones and use **grep** to find Brazil's timezone:
-```sh
-timedatectl list-timezones | grep Brazil
-```
-
-Finally, set the correct timezone:
-```sh
-timedatectl set-timezone Brazil/East
-```
--->
-
 ## SSH
-This section is for remote installation.
+This section is for remote installation from the **installation media**
 
 Check your computer's IP:
 ```sh
 ip addr
 ```
-> Look for your Wi-Fi card's name *(usually starts with "wlan")* or Ethernet interface name *(usually starts with "en")*.
+Look for your wifi device's name *(usually starts with "wlan")* or ethernet interface name *(usually starts with "en")*.
 
 Enable **SSH**:
 ```sh
@@ -89,46 +66,50 @@ Now, from another computer, execute the command:
 ```sh
 ssh root@192.168.18.8
 ```
-> Replace with the IP of the computer where the installation is taking place.
+Replace with the IP of the computer where the installation is taking place.
 
 You'll know it worked when you see the welcome message from **Arch Linux** after entering the password.
 
 ## Partitions
 ### Separation
-> I used `cfdisk` instead of the recommended `fdisk` in the wiki because it's more intuitive and easier to use.
+I used `cfdisk` instead of the recommended `fdisk` in the wiki because it's more intuitive and easier to use.
 
 Run **cfdisk**:
 ```sh
 cfdisk
 ```
-> Select **gpt** if asked for a label.
+Select **gpt** if asked for a label.
 
-Delete all other partitions, leaving only **Free Space**.
+Delete all other partitions, leaving only **free Space**
+
+> [!NOTE]
+> If you're doing a `dual boot`, just ignore the other OS partitions.
 
 ### Boot Partition
-Create a new partition with a size of **300Mb** *(Click "new" and type "300M")*.
+Create a new partition with a size of **300Mb**
 
 ### Swap Partition
-Create a new partition with a size of **4Gb** *(Click "new" and type "4G")*.
+Create a new partition with a size of **4Gb**
 
 ### Main Partition
-Finally, create a new partition with the remaining space and select **Write** for the Main Partition.
-
-
-You don't need to set a type for any partition, but is **very** important to set the boot partition type as *"BOOT Partition"*, otherwhise, *grub* will not install correctly
+Finally, create a new partition with the remaining space and **write**
 
 ## Format
-Use the command `lsblk` to see each partition; this will be useful to confirm everything is correct after each command bellow.
+In this tutorial these are each partitions:
+- `/dev/sda1`: Boot partition
+- `/dev/sda2`: Swap partition
+- `/dev/sda3`: Main partition
 
-Format the *main partition* to **Ext4**:
-```sh
-mkfs.ext4 /dev/sda3
-```
-> Make sure it's the correct partition.
+Use the `lsblk` command to see each partition; this will be useful to confirm everything is correct after each command below.
 
-Format the *boot* partition to **Fat32**:
+Format the *boot* partition to **FAT32**:
 ```sh
 mkfs.fat -F 32 /dev/sda1
+```
+
+Format the *main partition* to **ext4**:
+```sh
+mkfs.ext4 /dev/sda3
 ```
 
 Now create the *swap* partition with the following command:
@@ -141,9 +122,8 @@ Now, mount the partitions, starting with the main partition:
 ```sh
 mount /dev/sda3 /mnt
 ```
-> You can use the `lsblk` command again to check if the partition was mounted correctly.
 
-To mount *boot*, first create the boot directory:
+To mount the boot partition, first, create the boot directory:
 ```sh
 mkdir -p /mnt/boot/efi
 ```
@@ -161,311 +141,185 @@ swapon /dev/sda2
 If you run the `lsblk` command again, all partitions should be mounted correctly.
 
 # Installation
-Now for the fun part.
-
 ## Starting packages
-The following command will install the *base package*, *Linux Kernel*, and *common hardware firmware* to the main partition:
-```sh
-pacstrap -K /mnt base linux linux-firmware
-```
-> Check this part of the [wiki](https://wiki.archlinux.org/title/Installation_guide#Install_essential_packages) for useful information before running the command.
-
-> Read the entire content of this section *(from **2.2** to **3**)*.
-
-However, other recommended packages are:
-- *sof-firmware*: Supports newer sound cards
-  + Not necessarily required, but for precaution
-- *base-devel*: Packages like *sudo* and other useful packages
-- *grub*: Boot manager
-- *efibootmgr:* *EFI* for grub
-- *networkmanager*: Network Manager for system restarts
-- A text editor, such as *vim* or *nano*, which will be necessary later on
-
-So the final command will be:
+This is the command I usually use to install all the necessary packages
 ```sh
 pacstrap -K /mnt base linux linux-firmware sof-firmware base-devel grub efibootmgr networkmanager nano
 ```
 
-This will take some time...
+- **base**: Base package
+- **base-devel**: Packages like *sudo* and other useful packages
+- **linux**: Linux kernel
+- **linux-firmware**: Linux firmware
+- **sof-firmware**: Supports newer sound cards
+  + Not necessarily required, but is for precaution
+- **grub**: Boot manager
+- **efibootmgr:** *EFI* for grub
+- **networkmanager**: Network Manager for system restarts
+- A text editor, such as *vim* or *nano*, which will be necessary later on
 
-## Dual-boot
-If you don't want to dual-boot just skip to the next section *"Configuring the system"*
+Sometimes I also install `neovim`, but this can cause a package error, if this happens, restart all the installation
 
-You should alredy have Windows partitions *(or some other OS, I will be using windows here, but is basically the same thing)*
-
-You can install Windows after Arch Linux, but this way is easier
-
-### Make Windows mnt directory
-First of all, make a Windows mnt directory
-```sh
-mkdir -p /mnt/mnt/win
-```
-
-### Mount
-Now you should mount the Windows partition
-
-To know what partition is, run the commando `fdisk -l` and find the partition of type *"Microsoft basic data"*
-
-Then mount
-```sh
-mount /dev/sda4 /mnt/mnt/win
-```
+This installation will take some time...
 
 ## Configuring the system
-### File System
-Check the mounted *file systems* in */mnt/* with the following command:
-```sh
-genfstab /mnt
-```
+Technically you can now just configure *fstab*, create a user, and install *grub*, and the installation is finished, but I like to configure some things before.
 
-Once you confirm everything is correct, create a file named *fstab* with the information from the above command:
+## Generate fstab
+Generate the filesystem table to configure mount points:
 ```sh
 genfstab -U /mnt > /mnt/etc/fstab
 ```
 
 ## Change root
-Now, you can switch to the system:
+Switch to the newly installed system:
 ```sh
 arch-chroot /mnt
 ```
 
-All configurations will now be done within the system.
-
-### Hour
-With the following command, you can configure the system's time.
-
-Within the */usr/share/zoneinfo* path are all available timezones, so create a symbolic link to `etc/localtime`:
+## Set system time
+Set the correct timezone:
 ```sh
 ln -sf /usr/share/zoneinfo/Brazil/East /etc/localtime
 ```
 
-Check if the time is correct with the `date` command and synchronize the system clock:
+Synchronize the system clock:
 ```sh
 hwclock --systohc
 ```
 
-### Localization
-Open the file containing all localizations and **uncomment** the line with `en_US.UTF-8 UTF-8` and any others needed, like `pt_BR.UTF-8 UTF-8`:
-```sh
-nano /etc/locale.gen
-```
+Check if it's correct with the command `date`
 
-Save and generate all localizations:
-```sh
+## Localization
+Open the `/etc/locale.gen` file and uncomment the appropriate locales. Uncomment `en_US.UTF-8 UTF8` and any other needed locales.
+
+Then generate the locales:
+```
 locale-gen
 ```
 
-You also need to add to the `/etc/locale.conf` file because some programs check the location through it.
-
-This will be the system language:
-```
-LANG=en_US.UTF-8
+Set the system language by editing `/etc/locale.conf`:
+```sh
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
 ```
 
-### Keyboard layout
-Use the command bellow to view all available layouts:
+## Keyboard layout
+To view available keyboard layouts:
 ```sh
 localectl list-keymaps
 ```
-> Press "q" to exit
 
-Then choose your desired layout with the following command:
+Set your desired layout:
+```
+loadkeys us-acentos # Replace with your desired layout
+```
+
+Set the layout in `/etc/vconsole.conf`:
 ```sh
-loadkeys br-abnt2 # Replace with your desired layout
+echo "KEYMAP=us-acentos" > /etc/locale.conf
 ```
 
-The file to set the keyboard layout is in `/etc/vconsole.conf`:
+## Hostname
+Set the computer's hostname:
 ```sh
-nano /etc/vconsole.conf
+echo "myhostname" > /etc/hostname
 ```
 
-Specify the same layout you chose at the beginning, for example:
-```
-KEYMAP=us-acentos
-```
-
-You can check if the changes were made with the `localectl` command.
-
-### Host
-Choose a name for your computer and add it to the */etc/hostname* file:
+Edit `/etc/hosts` and add the following lines:
 ```sh
-nano /etc/hostname
+127.0.0.1	localhost
+::1		localhost
 ```
 
-Like so
-```
-name_of_your_computer
-```
-
-Open the **hosts** file in `/etc/hosts`, and insert the hosts:
-```
-127.0.0.1 localhost
-::1       localhost
-```
-
-### Root password
-Choose the password for your root:
+## Root password
+Set the root password:
 ```sh
 passwd
 ```
-> Also used for **SSH** connections, so choose a strong password
 
-### User
-To add a new user, use the following command:
+## Add user
+To create a new user:
 ```sh
-useradd -m -G wheel -s /bin/bash username
+useradd -m -G wheel -s /bin/bash myusername
 ```
-> **-m**: Add home directory
->
-> **-G**: Add to a group *(wheel)*
->
-> **-s**: Shell *(/bin/bash)*
 
-Now create a password for this user:
+Where each argument means:
+- `-m`: Create user's home directory
+- `-G`: User's group
+- `-s`: User's shell
+
+Set the user's password:
 ```sh
-passwd username
+passwd myusername
 ```
-> Use different passwords
 
-### Sudo
-This user will not be on the root user list.
-
-To add the user to the *sudo* user list, run the following command:
+### Enable sudo for user
+To allow the user to use `sudo`, run:
 ```sh
 EDITOR=nano visudo
 ```
-> Change nano to the text editor you downloaded
 
-This specifies the text editor you want to use to edit the *sudo* user list.
+Go to last lines and uncomment the following:
+```
+%wheel ALL=(ALL) ALL
+```
 
-*Uncomment* the line that says `%wheel ALL=(ALL:ALL) ALL`, which will make all users in the *wheel* group sudoers.
-
-That's why the created user was added to the *wheel* group.
-
-Now log in with the user you created and try running a *sudo* command:
+Now you can test if the user has `sudo`
 ```sh
-su username
+su myusername
 sudo pacman -Syu
 ```
 
-> Then switch back to the *root* user with the *exit* command.
+> [!WARNING]
+> Don't forget to execute the command `exit` before resuming the tutorial
 
 # Reboot
-## CPU Microcode
-You may also want to install *intel-ucode* or *amd-ucode*; this will speed up some processes:
-```sh
-sudo pacman -S intel-ucode
-```
-> This installation needs to be done before configuring **grub**.
-
 ## GRUB
-### Dual-Boot
-If you wan to have a dual-boot *(Windows)*, install the following packages:
+Install the GRUB bootloader:
 ```sh
-sudo pacaman -S dosfstool os-prober mtools
+grub-install --target=x86_64-efi --recheck /dev/sda
 ```
 
-Localize the partition of type *EFI System* with the command `fdisk -l` and mount the boot
-```sh
-mount /dev/sda5 /boot/efi
-```
+This command may cause an **EFI error** or install 32-bit instead. If any case happens, you may have booted the **installation media** in legacy mode instead of UEFI mode, and you will need to restart the whole installation
 
-### Install
-# Dual boot
-If you don't want to make dua
-
-# One boot
-
-Finally, configure the bootloader.
-
-Install **grub** on the *HD* with *Arch Linux*:
-```sh
-grub-install /dev/sda --target=x86_64-efi --recheck
-```
-> Make sure this is the correct disk if you have multiple HDs.
->
->**--recheck**: Check boot and find dual-boot *(if have one)*
-
-If you get some error or *grub* install the 32 bits target instead, you will have to restart the installation
-- **Error**: You may not have set the BIOS type
-- **32 bits**: You need to change the boot type of your *USB Drive* to **UEFI**
-
-### Silent boot
-If you don't want a silent boot *(no green OK wall appearing)*, open the */etc/default/grub*,
- file and change the value of the `GRUB_CMDLINE_LINUX_DEFAULT` line:
-```
-GRUB_CMDLINE_LINUX_DEFAULT=""
-```
-
-### Config
-Make the **grub** config:
+Generate the GRUB configuration file:
 ```sh
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### os-prober
-If you get the following warning: *"Warning: os-prober will **not** be executed to detect other bootable partitions [...]"*,
- and want to seet **os-prober** to detect other boot partitions, check bellow, otherwhise jump to the next session
-
->You should alredy had installed it
-
-Open **grub** config file
-```sh
-sudo nano /etc/default/grub
-```
-
-Run **os-prober** to detect other boot
-```sh
-sudo os-prober
-```
-
-Uncomment the line `GRUB_DISABLE_OS_PROBER=false` *(at the end of the file)*
-
-Now try to configure **grub** again
-```sh
-grub-mkconfig -o /boot/grub/grub.cfg
-```
-
-Now you should get the following warning: *"Warning: os-prober will be executed [...]"*
-
-
-## Final configurations
-Before rebooting, enable `networkmanager` so that the internet works:
+## Enable NetworkManager
+Enable `NetworkManager` to start with internet at boot:
 ```sh
 systemctl enable NetworkManager
 ```
 
-- Use the `exit` command to return to the iso terminal.
-- Execute the `umount -a` command to unmount all partitions.
+Unmount all partitions:
+```sh
+umount -a
+```
 
-Now you can finally restart with the `reboot` command and Remove the *USB Driver*
+Finally, reboot the system:
+```sh
+reboot
+```
 
-Congratulations, your Arch Linux is installed.
-
-**~>** It's common to get the fail: `[FAILED] Fialed unmounting /run/archiso/bootmnt`, don't worry about it
-
+Remove the installation media and Arch Linux should boot
 
 # Post-Installation
-Ensure that the internet is working with a `ping`.
- If `ping` returns an error, run the `sudo nmtui` command *(installed with NetworkManager)* and connect to a Wi-Fi network, on *"Active a connection"* option.
+Once Arch Linux has rebooted, ensure that the internet is working by running `ping archlinux.org`. If there is an issue, use `sudo nmtui` to connect to a wifi
 
+## Installing some Desktop Environment (XFCE4)
+To install XFCE4 desktop environment run the script located at `system/xfce4-instal.sh`
 
-# Interface
-## Internet
-Firstly, check if your internet is working with the `ping archlinux.org` command. If not, run the `sudo nmtui` command and connect to a Wi-Fi network or plug in the Ethernet cable.
+Or run the command:
+```sh
+sudo pacman -S --needed xorg xfce4 kitty xfce4-goodies xfce4-whiskermenu-plugin lightdm-gtk-greeter lightdm-gtk-greeter-settings
+```
 
-## Install
-Start *Arch Linux* and log in
-
-Run the script for installing **XFCE4**. Located at [system/](system/xfce4_install.sh)
-
-This will only download the necessary packages for *XFCE4* to work.
-
-Enable *lightdm*
+Enable `lightdm` to manage the login screen:
 ```sh
 systemctl enable lightdm
 ```
 
-Now just reboot, and *XFCE4* will be installed.
+Reboot, and you should now have a functional XFCE4 environment
 
-<!-- echo "setxkbmap -model abnt2 -layout br -variant abnt2" > ~/.xinitrc -->
