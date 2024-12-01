@@ -6,7 +6,6 @@ BACKUP_DIR="backup_files"
 NEOFETCH_DIR=~/.config/neofetch
 KITTY_DIR=~/.config/kitty
 XFCE4_DIR=~/.config/xfce4/xfconf/xfce-perchannel-xml
-ZSH_DIR=~/.config/zsh
 
 # ===== TARGET ===== #
 NEOFETCH_TARGET="$BACKUP_DIR/neofetch"
@@ -15,6 +14,7 @@ XFCE4_TARGET="$BACKUP_DIR/xfce4"
 XFCE4PANEL_TARGET="$BACKUP_DIR/xfce4-panel"
 GTK_TARGET="$BACKUP_DIR/gtk"
 SHELL_TARGET="$BACKUP_DIR/shell"
+SUDOSHELL_TARGET="$BACKUP_DIR/sudoshell"
 
 # Reset before backup
 if [ "$1" == "-d" ]; then
@@ -37,8 +37,9 @@ TARGETS=(
 	"$KITTY_TARGET"
 	"$XFCE4_TARGET"
 	"$XFCE4PANEL_TARGET"
-	"$GTK_TARGET"
+	# "$GTK_TARGET"
 	"$SHELL_TARGET"
+	"$SUDOSHELL_TARGET"
 )
 
 # Make all target folders
@@ -64,14 +65,15 @@ else
 	cp "$KITTY_DIR"/*.conf "$KITTY_TARGET" || { echo "Failed to back up kitty"; exit 1; }
 fi
 
-# ZSH_DIR and bash
+# zsh and bash
 if [ ! -f /usr/bin/zsh ]; then
 	echo "zsh is not installed, skipping..."
 else
 	echo "Making shell config files backup..."
 	cp ~/.zshrc "$SHELL_TARGET" || { echo "Failed to back up .zshrc"; exit 1; }
-	cp ~/.bashrc "$SHELL_TARGET" || { echo "Failed to back up .bashrc"; exit 1; }
+	sudo cp /root/.zshrc "$SUDOSHELL_TARGET" || { echo "Failed to back up /root/.zshrc"; exit 1; }
 fi
+cp ~/.bashrc "$SHELL_TARGET" || { echo "Failed to back up .bashrc"; exit 1; }
 
 # === XFCE4 === #
 # XFCE4_DIR
@@ -90,8 +92,8 @@ cp -r ~/.config/xfce4/panel/* "$XFCE4PANEL_TARGET" || { echo "Failed to back up 
 # === XFCE4 === #
 
 # GTK_DIR
-echo "Making gtk backup..."
-cp ~/.config/gtk-3.0/* "$GTK_TARGET" || { echo "Failed to back up gtk"; exit 1; }
+# echo "Making gtk backup..."
+# cp ~/.config/gtk-3.0/* "$GTK_TARGET" || { echo "Failed to back up gtk"; exit 1; }
 
 echo "Backup done!"
 
