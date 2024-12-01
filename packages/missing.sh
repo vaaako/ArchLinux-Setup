@@ -50,10 +50,10 @@ for app in "${selected_apps_array[@]}"; do
 			echo
 
 			sudo pacman -Rcns pulseaudio # Remove pulseaudio if have
-			sudo pacman -S pipewire-jack pipewire-alsa pipewire-pulse pavucontrol
+			sudo pacman -S pipewire pipewire-alsa pipewire-pulse pipewire-jack pavucontrol
 
 			# Enable pipewire
-			systemctl enable --now --user pipewire-pulse
+			systemctl --user enable --now pipewire-pulse
 			;;
 
 		"Codecs")

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 CONFS=("passwd" "View password stars" on \
+	"pacman" "pacman.conf config" on \
 	"lightdm" "" on \
 	"fstab" "Auto mount /dev/sdb1" on)
 
@@ -16,6 +17,15 @@ for CONF in "${SELECTED_ARRAY[@]}"; do
 		"passwd")
 			echo "Enabling password stars"
 			sudo sh -c "echo 'Defaults pwfeedback' >> /etc/sudoers"
+			;;
+
+		"pacman")
+			FILE="/etc/pacman.conf"
+			# Uncomment 'Color' and 'ParallelDownloads'
+			sudo sed -i 's/^#Color/Color/' "$FILE"
+			sudo sed -i 's/^#ParallelDownloads/ParallelDownloads/' "$FILE"
+
+			echo "Color and ParallelDownloads uncommented successfully."
 			;;
 
 		"lightdm")
