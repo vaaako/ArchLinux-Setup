@@ -11,7 +11,7 @@ TARGETS=("neofetch" "" on \
 	"kitty" "" on \
 	"xfce4" "XFCE4 Configs" on \
 	"xfce4-panels" "Top and bottom panels" on \
-	"shell" ".zshrc and .bashrc" on)
+	"shell" ".zshrc and .bashrc (and sudo)" on)
 
 
 # Display
@@ -26,8 +26,6 @@ if whiptail --title "Make backup before?" --yesno "This will apply the sufix .ba
 fi
 
 for TARGET in "${SELECTED_ARRAY[@]}"; do
-	echo
-
 	case "$TARGET" in
 		"neofetch")
 			if [ ! -d "$BACKUP_DIR/neofetch" ]; then
@@ -47,7 +45,7 @@ for TARGET in "${SELECTED_ARRAY[@]}"; do
 				mkdir -p ~/.config/neofetch/backup
 				cp -r ~/.config/neofetch/* ~/.config/neofetch/backup || { echo "Backup failed"; exit 1; }
 			fi
-			cp -r "$BACKUP_DIR/neofetch"/* ~/.config/neofetch || { echo "Restoration failed"; exit 1; }
+			cp -a "$BACKUP_DIR/neofetch"/. ~/.config/neofetch || { echo "Restoration failed"; exit 1; }
 			;;
 
 		"kitty")
@@ -68,7 +66,7 @@ for TARGET in "${SELECTED_ARRAY[@]}"; do
 				mkdir -p ~/.config/kitty/backup
 				cp -r ~/.config/kitty/* ~/.config/kitty/backup || { echo "Backup failed"; exit 1; }
 			fi
-			cp -r "$BACKUP_DIR/kitty"/* ~/.config/kitty || { echo "Restoration failed"; exit 1; }
+			cp -a "$BACKUP_DIR/kitty"/. ~/.config/kitty || { echo "Restoration failed"; exit 1; }
 			;;
 
 		"xfce4")
@@ -86,7 +84,7 @@ for TARGET in "${SELECTED_ARRAY[@]}"; do
 				mv "$XFCE4_DIR" ~/.config/xfce4/xfconf/xfce-perchannel-xml.bak || { echo "Backup failed"; exit 1; }
 				mkdir -p "$XFCE4_DIR"
 			fi
-			cp -r "$BACKUP_DIR/xfce4"/* "$XFCE4_DIR" || { echo "Restoration failed"; exit 1; }
+			cp -a "$BACKUP_DIR/xfce4"/. "$XFCE4_DIR" || { echo "Restoration failed"; exit 1; }
 			;;
 
 		"xfce4-panels")
@@ -102,7 +100,7 @@ for TARGET in "${SELECTED_ARRAY[@]}"; do
 				mv ~/.config/xfce4/panel ~/.config/xfce4/panel.bak || { echo "Backup failed"; exit 1; }
 				mkdir -p ~/.config/xfce4/panel
 			fi
-			cp -r "$BACKUP_DIR/xfce4-panel"/* ~/.config/xfce4/panel || { echo "Restoration failed"; exit 1; }
+			cp -a "$BACKUP_DIR/xfce4-panel"/. ~/.config/xfce4/panel || { echo "Restoration failed"; exit 1; }
 			;;
 
 		"shell")
@@ -111,20 +109,23 @@ for TARGET in "${SELECTED_ARRAY[@]}"; do
 				exit 1
 			fi
 
-			echo "Making shells restoration..."
+			echo "Making shell restoration..."
 
 			# Make a backup of shells
 			if [ $BACKUP -eq 1 ]; then
-				cp ~/.zshrc ~/.zshrc.bak || { echo "Backup failed"; exit 1; }
-				cp ~/.bashrc ~/.bashrc.bak || { echo "Backup failed"; exit 1; }
+				cp ~/.zshrc ~/.zshrc.bak || { echo "Backup .zshrc failed"; exit 1; }
+				cp ~/.bashrc ~/.bashrc.bak || { echo "Backup .bashrc failed"; exit 1; }
+
+				# Sudo shell
+				sudo cp /root/.zshrc /root/.zshrc.bak || { echo "Backup /root/.zshrc failed"; exit 1; }
 			fi
-			cp -r "$BACKUP_DIR/shell"/* ~/ || { echo "Restoration failed"; exit 1; }
+
+			cp -a $BACKUP_DIR/shell/. ~/ || { echo "Restoration shell failed"; exit 1; }
+			sudo cp -a $BACKUP_DIR/sudoshell/. /root || { echo "Restoration sudoshell failed"; exit 1; }
 			;;
 
 		*)
 			echo "Unknown selection: $TARGET"
 			;;
 	esac
-
-	echo
 done
