@@ -90,6 +90,10 @@ for app in "${selected_apps_array[@]}"; do
 
 			sudo pacman -S bluez bluez-libs bluez-plugins bluez-utils
 			sudo systemctl enable bluetooth
+
+
+			zenity --warning --text="Before using a gamepad with bluetooth, on the first use you may have to connect with a cable or pair manually"
+			echo
 			;;
 
 		"Thunar")
