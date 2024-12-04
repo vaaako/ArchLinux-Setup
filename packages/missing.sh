@@ -3,6 +3,7 @@
 apps=("Pulseaudio" "Pulseaudio, alsa and Pavucontrol" on \
 	"Pipewire" "Pipeware and Pavucontrol" off \
 	"Codecs" "Audio codecs" on \
+	"Bluetooth" "bluez and plugins" on \
 	"Thunar" "Thunar plugins and File manager utilities" on \
 	"Fonts" "" on \
 	"xdg" "(Open browser when clicking a link and other utilities)" on \
@@ -15,6 +16,11 @@ selected_apps=$(whiptail --title "Missing packages" --backtitle "Use space to se
 
 # Convert selected options to an array
 selected_apps_array=($(echo "$selected_apps" | tr -d '"'))
+
+
+echo -e "\033[1m~> UPDATING SYSTEM FIRST\033[0m"
+sudo pacman -Syyu
+echo
 
 # Iterate through the selected options and process each one
 for app in "${selected_apps_array[@]}"; do
@@ -70,6 +76,20 @@ for app in "${selected_apps_array[@]}"; do
 			echo
 
 			sudo pacman -S ffmpeg gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-plugins-base gst-libav gstreamer
+			;;
+
+		"Bluetooth")
+			echo "================================="
+			echo -e "\033[1m~> [BLUETOOTH] Installing the following packages:\033[0m"
+			echo "- bluez"
+			echo "- bluez-libs"
+			echo "- bluez-plugins"
+			echo "- bluez-utils"sudo pacman -S bluez bluez-libs bluez-plugins bluez-utils
+			echo "================================="
+			echo
+
+			sudo pacman -S bluez bluez-libs bluez-plugins bluez-utils
+			sudo systemctl enable bluetooth
 			;;
 
 		"Thunar")

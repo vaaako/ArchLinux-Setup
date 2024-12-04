@@ -28,6 +28,10 @@ selected_apps=$(whiptail --title "mypackages packages" --backtitle "Use space to
 # Convert selected options to an array
 selected_apps_array=($(echo "$selected_apps" | tr -d '"'))
 
+echo -e "\033[1m~> UPDATING SYSTEM FIRST\033[0m"
+sudo pacman -Syyu
+echo
+
 # Iterate through the selected options and process each one
 for app in "${selected_apps_array[@]}"; do
 	echo
