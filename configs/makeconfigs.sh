@@ -39,6 +39,12 @@ for CONF in "${SELECTED_ARRAY[@]}"; do
 			;;
 
 		"fstab")
+
+			if [ ! -f /usr/bin/mkfs.ntfs ]; then
+				echo "ntfs-3g not installed, installing"
+				sudo pacman -S ntfs-3g --noconfirm
+			fi
+
 			FSTAB_PATH=$(find . -name "fstab-hd.txt" -print -quit)
 			if [ -z $FSTAB_PATH ]; then
 				echo "configs/fstab-hd.txt not found!"

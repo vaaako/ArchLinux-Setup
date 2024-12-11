@@ -87,16 +87,6 @@ for app in "${selected_apps_array[@]}"; do
 			sudo pacman -S vlc
 			;;
 
-		"simplescreenrecorder")
-			echo "================================="
-			echo -e "\033[1m~> Installing the following packages:\033[0m"
-			echo "- simplescreenrecorder"
-			echo "================================="
-			echo
-
-			yay -S simplescreenrecorder
-			;;
-
 		"firefox")
 			echo "================================="
 			echo -e "\033[1m~> Installing the following packages:\033[0m"
@@ -203,9 +193,22 @@ for app in "${selected_apps_array[@]}"; do
 			sleep 10
 			;;
 
+		# Last because takes much time to install
+		"simplescreenrecorder")
+			echo "================================="
+			echo -e "\033[1m~> Installing the following packages:\033[0m"
+			echo "- simplescreenrecorder"
+			echo "================================="
+			echo
+
+			yay -S simplescreenrecorder
+			;;
+
+
 		*)
 			echo "Unknown selection: $app"
 			;;
+
 	esac
 
 	echo
