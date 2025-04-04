@@ -40,7 +40,7 @@ for app in "${selected_apps_array[@]}"; do
 		"zsh")
 			echo "================================="
 			echo -e "\033[1m~> Installing the following packages:\033[0m"
-			echo "- : "
+			echo "- zsh"
 			echo "================================="
 			echo
 

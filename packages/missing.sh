@@ -84,11 +84,12 @@ for app in "${selected_apps_array[@]}"; do
 			echo "- bluez"
 			echo "- bluez-libs"
 			echo "- bluez-plugins"
-			echo "- bluez-utils"sudo pacman -S bluez bluez-libs bluez-plugins bluez-utils
+			echo "- bluez-utils"
+			echo "- blueman"
 			echo "================================="
 			echo
 
-			sudo pacman -S bluez bluez-libs bluez-plugins bluez-utils
+			sudo pacman -S bluez bluez-libs bluez-plugins bluez-utils blueman
 			sudo systemctl enable bluetooth
 
 

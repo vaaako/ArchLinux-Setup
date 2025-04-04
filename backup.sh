@@ -79,12 +79,23 @@ cp ~/.bashrc "$SHELL_TARGET" || { echo "Failed to back up .bashrc"; exit 1; }
 # XFCE4_DIR
 echo "Making xfce4 config files backup..."
 cp "$XFCE4_DIR"/*.xml "$XFCE4_TARGET" || { echo "Failed to back up xfce4"; exit 1; }
+
+# Remove irrelevant settings
 rm "$XFCE4_TARGET"/displays.xml \
+	"$XFCE4_TARGET"/pointers.xml \
+	"$XFCE4_TARGET"/ristretto.xml \
+	"$XFCE4_TARGET"/keyboard-layout.xml \
+	"$XFCE4_TARGET"/xfce4-desktop.xml \
+	"$XFCE4_TARGET"/xfce4-notifyd.xml \
 	"$XFCE4_TARGET"/xfce4-power-manager.xml \
 	"$XFCE4_TARGET"/xfce4-screenshooter.xml \
+	"$XFCE4_TARGET"/xfce4-session.xml \
+	"$XFCE4_TARGET"/xfce4-settings-editor.xml \
+	"$XFCE4_TARGET"/xfce4-settings-manager.xml \
 	"$XFCE4_TARGET"/xfce4-taskmanager.xml 2> /dev/null # Ignore if not found
-	# Uncomment below if needed with sudo
-	# sudo rm "$XFCE4_TARGET"/parole.xml "$XFCE4_TARGET"/ristretto.xml
+
+# ristretto: image viewer
+
 
 # XFCE4 PANEL
 echo "Making xfce4 panel backup..."
