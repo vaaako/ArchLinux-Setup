@@ -9,7 +9,6 @@ fi
 
 TARGETS=("neofetch" "" on \
 	"kitty" "" on \
-	"xfce4" "XFCE4 Configs" on \
 	"xfce4-panels" "Top and bottom panels" on \
 	"shell" ".zshrc and .bashrc (and sudo)" on)
 
@@ -67,24 +66,6 @@ for TARGET in "${SELECTED_ARRAY[@]}"; do
 				cp -r ~/.config/kitty/* ~/.config/kitty/backup || { echo "Backup failed"; exit 1; }
 			fi
 			cp -a "$BACKUP_DIR/kitty"/. ~/.config/kitty || { echo "Restoration failed"; exit 1; }
-			;;
-
-		"xfce4")
-			XFCE4_DIR=~/.config/xfce4/xfconf/xfce-perchannel-xml
-
-			if [ ! -d "$BACKUP_DIR/xfce4" ]; then
-				echo "xfce4 backup folder does not exist"
-				exit 1
-			fi
-
-			echo "Making xfce4 restoration..."
-
-			# Make a backup folder before and move all files to it
-			if [ $BACKUP -eq 1 ]; then
-				mv "$XFCE4_DIR" ~/.config/xfce4/xfconf/xfce-perchannel-xml.bak || { echo "Backup failed"; exit 1; }
-				mkdir -p "$XFCE4_DIR"
-			fi
-			cp -a "$BACKUP_DIR/xfce4"/. "$XFCE4_DIR" || { echo "Restoration failed"; exit 1; }
 			;;
 
 		"xfce4-panels")
