@@ -27,7 +27,8 @@ sudo pacman -S --noconfirm --needed \
 	gnome-logs \
 	gnome-session \
 	gnome-system-monitor \
-	gnome-shell-extensions \
+	gnome-extensions \
+	gnome-weather \
 	gvfs \
 	gvfs-google \
 	gvfs-mtp \
